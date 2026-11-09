@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; base-uri 'none'; form-action 'none'">
-<title>Mein Lebenslauf</title>
+<title>Meine Bewerbung</title>
 <style>
 :root {
   color-scheme: light;
@@ -29,21 +29,29 @@ button.quiet { border-color: transparent; background: transparent; color: var(--
 button.quiet:hover { background: #e7ece8; color: var(--ink); }
 .filebtn input { display: none; }
 
-.bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 16px 0; background: var(--surface); border-bottom: 1px solid var(--line); }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
 .status { flex-basis: 100%; min-height: 1.4em; font-size: .875rem; color: var(--muted); }
 .status.error { color: var(--bad); font-weight: 600; }
 
+/* Registerkarten */
+.tabs { flex-basis: 100%; display: flex; gap: 4px; margin-bottom: -1px; overflow-x: auto; }
+.tabs [role=tab] { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: var(--muted); padding: .4em 1em; white-space: nowrap; }
+.tabs [role=tab]:hover { background: #eef2ef; color: var(--ink); }
+.tabs [role=tab][aria-selected=true] { color: var(--accent); border-bottom-color: var(--accent); }
+
 .layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; max-width: 1320px; margin: 0 auto; padding: 16px; align-items: start; }
-#form { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.form { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 .hint { font-size: .875rem; color: var(--muted); }
 
 .field { display: flex; flex-direction: column; gap: 3px; font-size: .9rem; font-weight: 600; min-width: 0; }
-input:not([type=range]):not([type=file]), textarea { font: 400 1rem var(--sans); color: var(--ink); width: 100%; min-width: 0; min-height: 44px; padding: .45em .6em; border: 1px solid #8b9690; border-radius: 7px; background: #fff; }
+.field .hint { font-weight: 400; }
+input:not([type=range]):not([type=file]), textarea, select { font: 400 1rem var(--sans); color: var(--ink); width: 100%; min-width: 0; min-height: 44px; padding: .45em .6em; border: 1px solid #8b9690; border-radius: 7px; background: #fff; }
 textarea { resize: vertical; }
 .field input[type=range] { width: 100%; min-height: 32px; accent-color: var(--accent); }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+.grid3 { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px 12px; }
 .wide { grid-column: 1 / -1; }
 
 .photo { display: flex; gap: 16px; align-items: flex-start; }
@@ -68,11 +76,17 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 
 .sig { margin-top: 4px; align-items: flex-start; }
 #sigCanvas { width: 100%; aspect-ratio: 4 / 1; background: #fff; border: 1px solid #8b9690; border-radius: 7px; touch-action: none; cursor: crosshair; }
-.sig .hint { font-weight: 400; }
+
+/* Übernommene Angaben im Motivationsschreiben */
+.from { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 4px 12px; font-size: .95rem; }
+.from dt { color: var(--muted); }
+.from dd { margin: 0; overflow-wrap: anywhere; white-space: pre-line; }
+.from .missing { color: var(--bad); }
+.goto-cv { align-self: flex-start; }
 
 /* Vorschau: A4, alle Masse relativ zur Blattbreite */
-.preview { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.sheetwrap { container-type: inline-size; width: 100%; max-width: calc((100vh - 150px) / 1.414); margin-inline: auto; }
+.preview { position: sticky; top: 150px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.sheetwrap { container-type: inline-size; width: 100%; max-width: calc((100vh - 190px) / 1.414); margin-inline: auto; }
 .sheet { background: #fff; color: #000; box-shadow: 0 1px 6px rgba(0, 0, 0, .22); min-height: 141.4cqw; padding: 11.9cqw; font: 1.85cqw/1.35 Arial, Helvetica, sans-serif; }
 .s-head { display: flex; justify-content: space-between; gap: 2cqw; }
 .s-head > div { flex: 1; min-width: 0; }
@@ -87,6 +101,13 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 .s-signbox { min-height: 7.2cqw; border-bottom: .1cqw solid #000; display: flex; align-items: flex-end; overflow-wrap: anywhere; }
 .s-signbox img { width: 100%; max-width: 28.5cqw; display: block; }
 .s-cap { font-size: 1.4cqw; color: #555; margin-top: .4cqw; }
+.l-block { margin-bottom: 4.4cqw; overflow-wrap: anywhere; }
+.l-subject { font-weight: 700; margin-bottom: 3.3cqw; overflow-wrap: anywhere; }
+.l-p { margin-bottom: 1.8cqw; white-space: pre-line; overflow-wrap: anywhere; }
+.l-sig { height: 6.6cqw; display: flex; align-items: flex-end; }
+.l-sig img { width: 22cqw; display: block; }
+.l-beilagen { margin-top: 4.4cqw; }
+.l-empty { color: #9a9a9a; font-style: italic; }
 
 @media (max-width: 900px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
@@ -96,7 +117,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 }
 @media (max-width: 560px) {
   .bar { position: static; }
-  .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .grid2, .grid3 { grid-template-columns: minmax(0, 1fr); }
   .rowhead, .t-ref .rowhead { display: none; }
   .schoolrow, .t-ref .schoolrow { grid-template-columns: minmax(0, 1fr); padding-bottom: 8px; border-bottom: 1px solid var(--line); }
   .photo { flex-direction: column; }
@@ -105,7 +126,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 </head>
 <body>
 <header class="bar">
-  <h1>Mein Lebenslauf</h1>
+  <h1>Meine Bewerbung</h1>
   <div class="actions">
     <button type="button" class="primary" id="btnWord">Als Word speichern</button>
     <button type="button" id="btnSave">Stand sichern</button>
@@ -113,10 +134,14 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     <button type="button" class="quiet" id="btnClear">Alles löschen</button>
   </div>
   <p class="status" id="status" role="status" aria-live="polite"></p>
+  <div class="tabs" role="tablist" aria-label="Dokument">
+    <button type="button" role="tab" id="tab-cv" data-tab="cv" aria-controls="panel-cv" aria-selected="true">Lebenslauf</button>
+    <button type="button" role="tab" id="tab-brief" data-tab="brief" aria-controls="panel-brief" aria-selected="false" tabindex="-1">Motivationsschreiben</button>
+  </div>
 </header>
 
-<main class="layout">
-  <form id="form" autocomplete="off" novalidate>
+<main class="layout" id="panel-cv" role="tabpanel" aria-labelledby="tab-cv">
+  <form class="form" autocomplete="off" novalidate>
     <p class="hint">Deine Angaben bleiben auf diesem Gerät. Der Browser kann sie nach einigen Tagen löschen. Tippe darum am Schluss auf «Stand sichern» und lege die Datei in «Dateien» ab. Mit «Stand laden» arbeitest du später weiter.</p>
     <section class="card">
       <h2>Foto</h2>
@@ -186,6 +211,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 
     <section class="card">
       <h2>Ort, Datum und Unterschrift</h2>
+      <p class="hint">Gilt auch für das Motivationsschreiben.</p>
       <div class="grid2">
         <label class="field">Ort <input data-f="ortUnterschrift" maxlength="60" id="ortUnterschrift"></label>
         <label class="field">Datum <input data-f="datum" type="date"></label>
@@ -199,19 +225,98 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     </section>
   </form>
 
-  <aside class="preview" aria-label="Vorschau">
+  <aside class="preview" aria-label="Vorschau Lebenslauf">
     <h2>Vorschau</h2>
     <div class="sheetwrap"><div class="sheet" id="sheet"></div></div>
   </aside>
 </main>
 
+<main class="layout" id="panel-brief" role="tabpanel" aria-labelledby="tab-brief" hidden>
+  <form class="form" autocomplete="off" novalidate>
+    <section class="card">
+      <h2>Aus deinem Lebenslauf</h2>
+      <p class="hint">Diese Angaben übernimmt das Schreiben automatisch. Ändern kannst du sie im Lebenslauf.</p>
+      <dl class="from" id="fromCv"></dl>
+      <button type="button" class="quiet goto-cv" id="gotoCv">Im Lebenslauf ändern</button>
+    </section>
+
+    <section class="card">
+      <h2>Empfänger</h2>
+      <p class="hint">Den Betrieb und die Kontaktperson findest du im Inserat oder auf der Website des Betriebs.</p>
+      <label class="field">Betrieb <input data-f="briefFirma" maxlength="100" placeholder="z. B. Muster AG"></label>
+      <div class="grid3">
+        <label class="field">Anrede
+          <select data-f="briefAnrede">
+            <option value="">Keine Person</option>
+            <option value="frau">Frau</option>
+            <option value="herr">Herr</option>
+          </select>
+        </label>
+        <label class="field">Vorname <input data-f="briefVorname" maxlength="60"></label>
+        <label class="field">Nachname <input data-f="briefNachname" maxlength="60"></label>
+      </div>
+      <div class="grid3">
+        <label class="field wide">Strasse und Nummer <input data-f="briefStrasse" maxlength="100"></label>
+        <label class="field">PLZ <input data-f="briefPlz" inputmode="numeric" maxlength="10"></label>
+        <label class="field" style="grid-column: span 2">Ort <input data-f="briefOrt" maxlength="60"></label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Betreff</h2>
+      <label class="field">Worum geht es in deinem Schreiben?
+        <input data-f="briefBetreff" maxlength="150" placeholder="z. B. Bewerbung um eine Lehrstelle als Informatikerin EFZ">
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Text</h2>
+      <p class="hint">Die Anrede setzt die Seite selbst ein, zum Beispiel «Sehr geehrte Frau Muster,». Nach dem Komma beginnt der erste Satz klein. Schreibe zu jeder Frage ein paar Sätze.</p>
+      <label class="field">1. Einstieg
+        <span class="hint">Wie hast du von der Stelle erfahren? Wofür bewirbst du dich?</span>
+        <textarea data-f="briefEinstieg" rows="3" maxlength="1500" placeholder="z. B. auf berufsberatung.ch habe ich gesehen, dass Sie für August 2027 eine Lehrstelle als … anbieten. Darum bewerbe ich mich bei Ihnen."></textarea>
+      </label>
+      <label class="field">2. Warum dieser Beruf?
+        <span class="hint">Was gefällt dir daran? Was hast du in der Schnupperlehre erlebt?</span>
+        <textarea data-f="briefBeruf" rows="4" maxlength="1500" placeholder="z. B. In meiner Schnupperlehre bei … durfte ich … Dabei habe ich gemerkt, dass …"></textarea>
+      </label>
+      <label class="field">3. Warum dieser Betrieb?
+        <span class="hint">Was spricht dich an diesem Betrieb an?</span>
+        <textarea data-f="briefBetrieb" rows="3" maxlength="1500" placeholder="z. B. Ihr Betrieb gefällt mir, weil …"></textarea>
+      </label>
+      <label class="field">4. Deine Stärken
+        <span class="hint">Was kannst du gut? Nenne zu jeder Stärke ein Beispiel.</span>
+        <textarea data-f="briefStaerken" rows="4" maxlength="1500" placeholder="z. B. Ich bin zuverlässig: Im Unihockey-Verein bin ich seit drei Jahren für … verantwortlich."></textarea>
+      </label>
+      <label class="field">5. Schluss
+        <span class="hint">Bitte um ein Vorstellungsgespräch oder eine Schnupperlehre.</span>
+        <textarea data-f="briefSchluss" rows="2" maxlength="800" placeholder="z. B. Gerne stelle ich mich bei Ihnen persönlich vor. Ich freue mich auf Ihre Antwort."></textarea>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Beilagen</h2>
+      <label class="field">Pro Zeile eine Beilage
+        <textarea data-f="briefBeilagen" rows="3" maxlength="400"></textarea>
+      </label>
+    </section>
+  </form>
+
+  <aside class="preview" aria-label="Vorschau Motivationsschreiben">
+    <h2>Vorschau</h2>
+    <div class="sheetwrap"><div class="sheet" id="sheetBrief"></div></div>
+  </aside>
+</main>
+
 <script>
-/* Baut aus einem Lebenslauf-Modell eine .docx-Datei, ohne Bibliothek.
+/* Baut Word-Dateien (.docx) ohne Bibliothek: den Lebenslauf und das Motivationsschreiben.
    Eine .docx ist ein ZIP-Archiv mit XML-Dateien; hier ungepackt gespeichert.
-   Modell: { name, personalien: [[Bezeichnung, Wert]],
-             schule, schnupper, referenzen: je [{ links, rechts }],
-             interessen: [String], ortDatum, foto: Uint8Array|null (JPEG),
-             unterschrift: Uint8Array|null (PNG) } */
+   Lebenslauf: { name, personalien: [[Bezeichnung, Wert]],
+                 schule, schnupper, referenzen: je [{ links, rechts }],
+                 interessen: [String], ortDatum, foto: Uint8Array|null (JPEG),
+                 unterschrift: Uint8Array|null (PNG) }
+   Schreiben:  { name, absender: [String], empfaenger: [String], ortDatum, betreff,
+                 anrede, absaetze: [String], beilagen: [String], unterschrift } */
 (function (root) {
   'use strict';
 
@@ -234,10 +339,15 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
   const run = (text) => `<w:r><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`;
+  const bold = (text) => `<w:r><w:rPr><w:b/><w:bCs/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`;
+  // Zeilenumbrüche innerhalb eines Absatzes
+  const lines = (text) => '<w:r>' + String(text).split('\n')
+    .map((s) => `<w:t xml:space="preserve">${esc(s)}</w:t>`).join('<w:br/>') + '</w:r>';
   const para = (inner = '', style = '', ppr = '') => {
     const s = style ? `<w:pStyle w:val="${style}"/>` : '';
     return `<w:p>${s || ppr ? `<w:pPr>${s}${ppr}</w:pPr>` : ''}${inner}</w:p>`;
   };
+  const after = (twips) => `<w:spacing w:after="${twips}"/>`;
   const cell = (width, content, tcpr = '') =>
     `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${tcpr}</w:tcPr>${content}</w:tc>`;
   const row = (cells) => `<w:tr><w:trPr><w:cantSplit/></w:trPr>${cells}</w:tr>`;
@@ -264,6 +374,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
       '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
   }
 
+  /* ---------- Lebenslauf ---------- */
   function headTable(m) {
     const photoMar = '<w:tcMar><w:right w:w="0" w:type="dxa"/></w:tcMar>';
     const photo = m.foto
@@ -299,7 +410,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     ]);
   }
 
-  function documentXml(m) {
+  function cvBody(m) {
     const body = [headTable(m)];
     const block = (title, rows) => {
       if (!rows.length) return;
@@ -311,13 +422,40 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     block('Schnupperlehren', m.schnupper);
     if (m.interessen.length) {
       body.push(para(run('Interessen'), 'Heading1'));
-      for (const line of m.interessen) body.push(para(run(line), '', '<w:spacing w:after="40"/>'));
+      for (const line of m.interessen) body.push(para(run(line), '', after(40)));
     }
     block('Referenzen', m.referenzen);
     body.push(para('', '', '<w:keepNext/><w:spacing w:before="480"/>'));
     body.push(signTable(m));
     body.push(para('', '', '<w:spacing w:line="20" w:lineRule="exact"/>'));
-    return HEAD + `<w:document ${NS_ALL}><w:body>${body.join('')}` +
+    return body.join('');
+  }
+
+  /* ---------- Motivationsschreiben ---------- */
+  function letterBody(L) {
+    const body = [];
+    const block = (list, gap) => list.forEach((t, i) =>
+      body.push(para(run(t), '', i === list.length - 1 ? after(gap) : '')));
+    block(L.absender, 600);
+    block(L.empfaenger, 600);
+    body.push(para(run(L.ortDatum), '', after(480)));
+    if (L.betreff) body.push(para(bold(L.betreff), '', after(360)));
+    body.push(para(run(L.anrede + ','), '', after(200)));
+    for (const t of L.absaetze) body.push(para(lines(t), '', after(200)));
+    body.push(para(run('Freundliche Grüsse'), '', '<w:keepNext/><w:spacing w:before="160" w:after="0"/>'));
+    body.push(L.unterschrift
+      ? para(image('rId4', 2, 'Unterschrift', 'Unterschrift von ' + L.name, 5 * CM, Math.round(1.25 * CM)), '', '<w:keepNext/>')
+      : para('', '', '<w:keepNext/><w:spacing w:before="560"/>'));
+    body.push(para(run(L.name)));
+    if (L.beilagen.length) {
+      body.push(para(bold('Beilagen'), '', '<w:keepNext/><w:spacing w:before="480"/>'));
+      L.beilagen.forEach((t) => body.push(para(run(t))));
+    }
+    return body.join('');
+  }
+
+  function documentXml(body) {
+    return HEAD + `<w:document ${NS_ALL}><w:body>${body}` +
       '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>' +
       '<w:pgMar w:top="1418" w:right="1418" w:bottom="1418" w:left="1418" w:header="709" w:footer="709" w:gutter="0"/>' +
       '</w:sectPr></w:body></w:document>';
@@ -344,14 +482,15 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 
   const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
 
-  function parts(m) {
+  // doc: { body, title, creator, foto, unterschrift }
+  function parts(doc) {
     const enc = new TextEncoder();
     const rels = [
       `<Relationship Id="rId1" Type="${REL}/styles" Target="styles.xml"/>`,
       `<Relationship Id="rId2" Type="${REL}/settings" Target="settings.xml"/>`,
     ];
-    if (m.foto) rels.push(`<Relationship Id="rId3" Type="${REL}/image" Target="media/foto.jpg"/>`);
-    if (m.unterschrift) rels.push(`<Relationship Id="rId4" Type="${REL}/image" Target="media/unterschrift.png"/>`);
+    if (doc.foto) rels.push(`<Relationship Id="rId3" Type="${REL}/image" Target="media/foto.jpg"/>`);
+    if (doc.unterschrift) rels.push(`<Relationship Id="rId4" Type="${REL}/image" Target="media/unterschrift.png"/>`);
 
     const types = HEAD + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
       '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
@@ -367,7 +506,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     const core = HEAD + '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"' +
       ' xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/"' +
       ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
-      `<dc:title>${esc('Lebenslauf ' + m.name)}</dc:title><dc:creator>${esc(m.name)}</dc:creator>` +
+      `<dc:title>${esc(doc.title)}</dc:title><dc:creator>${esc(doc.creator)}</dc:creator>` +
       `<dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created>` +
       '</cp:coreProperties>';
 
@@ -378,13 +517,13 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
         '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>' +
         '</Relationships>'],
       ['docProps/core.xml', core],
-      ['word/document.xml', documentXml(m)],
+      ['word/document.xml', documentXml(doc.body)],
       ['word/styles.xml', STYLES],
       ['word/settings.xml', SETTINGS],
       ['word/_rels/document.xml.rels', HEAD + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + rels.join('') + '</Relationships>'],
     ].map(([name, text]) => [name, enc.encode(text)]);
-    if (m.foto) list.push(['word/media/foto.jpg', m.foto]);
-    if (m.unterschrift) list.push(['word/media/unterschrift.png', m.unterschrift]);
+    if (doc.foto) list.push(['word/media/foto.jpg', doc.foto]);
+    if (doc.unterschrift) list.push(['word/media/unterschrift.png', doc.unterschrift]);
     return list;
   }
 
@@ -448,17 +587,25 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     return out;
   }
 
-  root.LebenslaufDocx = { build: (model) => zip(parts(model)) };
+  root.LebenslaufDocx = {
+    build: (m) => zip(parts({ body: cvBody(m), title: 'Lebenslauf ' + m.name, creator: m.name, foto: m.foto, unterschrift: m.unterschrift })),
+    buildLetter: (L) => zip(parts({ body: letterBody(L), title: 'Motivationsschreiben ' + L.name, creator: L.name, foto: null, unterschrift: L.unterschrift })),
+  };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>
-/* Lebenslauf-App: alle Daten bleiben im Browser (localStorage) oder in einer
+/* Bewerbungs-App: alle Daten bleiben im Browser (localStorage) oder in einer
    Datei, die die Schülerin oder der Schüler selbst sichert. Kein Netzverkehr. */
 'use strict';
 
 const KEY = 'lebenslauf-3a-v1';
+const TAB_KEY = 'lebenslauf-3a-tab';
+const BRIEF_TEXTS = ['briefEinstieg', 'briefBeruf', 'briefBetrieb', 'briefStaerken', 'briefSchluss'];
 const TEXT_FIELDS = ['vorname', 'nachname', 'strasse', 'plz', 'wohnort', 'geburtsdatum', 'heimatort',
-  'nationalitaet', 'sprachen', 'telefon', 'email', 'interessen', 'ortUnterschrift', 'datum'];
+  'nationalitaet', 'sprachen', 'telefon', 'email', 'interessen', 'ortUnterschrift', 'datum',
+  'briefFirma', 'briefAnrede', 'briefVorname', 'briefNachname', 'briefStrasse', 'briefPlz', 'briefOrt',
+  'briefBetreff', ...BRIEF_TEXTS, 'briefBeilagen'];
+const ANREDEN = ['', 'frau', 'herr'];
 const MAX_ROWS = 20;
 const $ = (id) => document.getElementById(id);
 
@@ -490,12 +637,14 @@ function blank() {
   for (const t in TABLES) s[t] = Array.from({ length: TABLES[t].rows }, () => emptyRow(t));
   for (const f of TEXT_FIELDS) s[f] = '';
   s.datum = today();
+  s.briefBeilagen = 'Lebenslauf\nZeugnisse\nSchnupperlehr-Berichte';
   return s;
 }
 
 let state = blank();
 let fotoImage = null;   // geladenes Originalbild
 let fotoJpeg = null;    // aktueller Ausschnitt als data:-URL
+let tab = 'cv';
 
 /* ---------- Status und Speichern ---------- */
 function say(text, isError = false) {
@@ -524,7 +673,8 @@ function normalize(raw) {
   if (!raw || typeof raw !== 'object') throw new Error('kein Stand');
   const s = blank();
   const str = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
-  for (const f of TEXT_FIELDS) if (typeof raw[f] === 'string') s[f] = str(raw[f], 800);
+  for (const f of TEXT_FIELDS) if (typeof raw[f] === 'string') s[f] = str(raw[f], 1500);
+  if (!ANREDEN.includes(s.briefAnrede)) s.briefAnrede = '';
   for (const t in TABLES) {
     if (!Array.isArray(raw[t]) || !raw[t].length) continue;
     s[t] = raw[t].slice(0, MAX_ROWS).map((r) =>
@@ -542,14 +692,15 @@ function normalize(raw) {
 }
 
 function hasContent() {
+  const d = blank();
   return !!(state.foto || state.unterschrift ||
-    TEXT_FIELDS.some((f) => f !== 'datum' && state[f].trim()) ||
+    TEXT_FIELDS.some((f) => f !== 'datum' && state[f].trim() && state[f] !== d[f]) ||
     Object.keys(TABLES).some((t) => state[t].some((r) => Object.values(r).some(Boolean))));
 }
 
-function fileStem() {
+function fileName(prefix, ext) {
   const name = [state.vorname, state.nachname].map((p) => p.trim()).filter(Boolean).join('_');
-  return ('Lebenslauf_' + name).replace(/[^\p{L}\p{N}-]+/gu, '_').replace(/_$/, '');
+  return (prefix + '_' + name).replace(/[^\p{L}\p{N}-]+/gu, '_').replace(/_$/, '') + ext;
 }
 function download(blob, name) {
   const a = document.createElement('a');
@@ -583,19 +734,23 @@ async function deliver(blob, name) {
   return 'heruntergeladen';
 }
 
-/* ---------- Modell für Vorschau und Word ---------- */
+/* ---------- Modelle für Vorschau und Word ---------- */
+const t = (v) => (v || '').trim();
 function longDate(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
   if (!m) return '';
   return new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' });
 }
+const fullName = () => [t(state.vorname), t(state.nachname)].filter(Boolean).join(' ');
+const plzOrt = (plz, ort) => [t(plz), t(ort)].filter(Boolean).join(' ');
+const ortDatum = () => [t(state.ortUnterschrift) || t(state.wohnort), longDate(state.datum)].filter(Boolean).join(', ');
+
 function model() {
-  const t = (v) => (v || '').trim();
   const personalien = [
     ['Vorname', t(state.vorname)],
     ['Nachname', t(state.nachname)],
     ['Strasse', t(state.strasse)],
-    ['Wohnort', [t(state.plz), t(state.wohnort)].filter(Boolean).join(' ')],
+    ['Wohnort', plzOrt(state.plz, state.wohnort)],
     ['Geburtsdatum', longDate(state.geburtsdatum)],
     ['Heimatort', t(state.heimatort)],
     ['Nationalität', t(state.nationalitaet)],
@@ -608,13 +763,33 @@ function model() {
     .map((r) => ({ links: t(r[first]), rechts: rest.map((k) => t(r[k])).filter(Boolean).join(', ') }))
     .filter((r) => r.links || r.rechts);
   return {
-    name: [t(state.vorname), t(state.nachname)].filter(Boolean).join(' '),
+    name: fullName(),
     personalien,
     schule: rows(state.schule, 'zeit', 'schule', 'ort'),
     schnupper: rows(state.schnupper, 'zeit', 'beruf', 'betrieb'),
     referenzen: rows(state.referenzen, 'name', 'funktion', 'kontakt'),
     interessen: state.interessen.split('\n').map(t).filter(Boolean),
-    ortDatum: [t(state.ortUnterschrift) || t(state.wohnort), longDate(state.datum)].filter(Boolean).join(', '),
+    ortDatum: ortDatum(),
+  };
+}
+
+function letterModel() {
+  const titel = { frau: 'Frau', herr: 'Herr' }[state.briefAnrede] || '';
+  const person = [t(state.briefVorname), t(state.briefNachname)].filter(Boolean).join(' ');
+  const nachname = t(state.briefNachname);
+  let anrede = 'Sehr geehrte Damen und Herren';
+  if (nachname && state.briefAnrede === 'frau') anrede = `Sehr geehrte Frau ${nachname}`;
+  if (nachname && state.briefAnrede === 'herr') anrede = `Sehr geehrter Herr ${nachname}`;
+  return {
+    name: fullName(),
+    absender: [fullName(), t(state.strasse), plzOrt(state.plz, state.wohnort), t(state.telefon), t(state.email)].filter(Boolean),
+    empfaenger: [t(state.briefFirma), person && [titel, person].filter(Boolean).join(' '),
+      t(state.briefStrasse), plzOrt(state.briefPlz, state.briefOrt)].filter(Boolean),
+    ortDatum: ortDatum(),
+    betreff: t(state.briefBetreff),
+    anrede,
+    absaetze: BRIEF_TEXTS.map((f) => t(state[f])).filter(Boolean),
+    beilagen: state.briefBeilagen.split('\n').map(t).filter(Boolean),
   };
 }
 
@@ -630,7 +805,13 @@ function sRow(a, b) {
   r.append(el('div', '', a), el('div', '', b));
   return r;
 }
-function renderPreview() {
+function signatureImg(alt) {
+  const img = el('img');
+  img.src = state.unterschrift;
+  img.alt = alt;
+  return img;
+}
+function renderCv() {
   const m = model();
   const sheet = $('sheet');
   sheet.replaceChildren();
@@ -667,17 +848,92 @@ function renderPreview() {
   const a = el('div'), b = el('div');
   const boxA = el('div', 's-signbox', m.ortDatum);
   const boxB = el('div', 's-signbox');
-  if (state.unterschrift) {
-    const img = el('img');
-    img.src = state.unterschrift;
-    img.alt = 'Deine Unterschrift';
-    boxB.append(img);
-  }
+  if (state.unterschrift) boxB.append(signatureImg('Deine Unterschrift'));
   a.append(boxA, el('div', 's-cap', 'Ort, Datum'));
   b.append(boxB, el('div', 's-cap', 'Unterschrift'));
   sign.append(a, b);
   sheet.append(sign);
 }
+
+function renderLetter() {
+  const L = letterModel();
+  const sheet = $('sheetBrief');
+  sheet.replaceChildren();
+  // Leere Teile grau andeuten, damit man sieht, was noch fehlt (nicht im Word)
+  const lines = (list, empty) => {
+    const box = el('div', 'l-block');
+    if (list.length) list.forEach((s) => box.append(el('div', '', s)));
+    else box.append(el('div', 'l-empty', empty));
+    sheet.append(box);
+  };
+  lines(L.absender, 'Dein Name und deine Adresse (aus dem Lebenslauf)');
+  lines(L.empfaenger, 'Betrieb und Adresse');
+  sheet.append(el('div', 'l-block', L.ortDatum));
+  sheet.append(L.betreff ? el('div', 'l-subject', L.betreff) : el('div', 'l-subject l-empty', 'Betreff'));
+  sheet.append(el('div', 'l-p', L.anrede + ','));
+  if (L.absaetze.length) L.absaetze.forEach((p) => sheet.append(el('div', 'l-p', p)));
+  else sheet.append(el('div', 'l-p l-empty', 'Hier steht dein Text.'));
+  sheet.append(el('div', '', 'Freundliche Grüsse'));
+  const sig = el('div', 'l-sig');
+  if (state.unterschrift) sig.append(signatureImg('Deine Unterschrift'));
+  sheet.append(sig, el('div', '', L.name));
+  if (L.beilagen.length) {
+    const box = el('div', 'l-beilagen');
+    box.append(el('div', 'l-subject', 'Beilagen'));
+    box.lastChild.style.marginBottom = '0';
+    L.beilagen.forEach((s) => box.append(el('div', '', s)));
+    sheet.append(box);
+  }
+
+  // Übernommene Angaben im Formular
+  const from = $('fromCv');
+  from.replaceChildren();
+  const item = (label, value, missing) => {
+    from.append(el('dt', '', label));
+    from.append(value ? el('dd', '', value) : el('dd', 'missing', missing));
+  };
+  item('Absender', L.absender.join('\n'), 'Fehlt noch. Fülle die Personalien aus.');
+  item('Ort, Datum', L.ortDatum, 'Fehlt noch.');
+  item('Unterschrift', state.unterschrift ? 'vorhanden' : '', 'Keine. Unterschreibe im Lebenslauf oder von Hand.');
+}
+
+function renderPreview() {
+  renderCv();
+  renderLetter();
+}
+
+/* ---------- Registerkarten ---------- */
+const TABS = ['cv', 'brief'];
+function showTab(name, focus = false) {
+  tab = TABS.includes(name) ? name : 'cv';
+  for (const n of TABS) {
+    const b = $('tab-' + n);
+    const on = n === tab;
+    b.setAttribute('aria-selected', on);
+    b.tabIndex = on ? 0 : -1;
+    $('panel-' + n).hidden = !on;
+  }
+  if (focus) $('tab-' + tab).focus();
+  updateWordLabel();
+  try { localStorage.setItem(TAB_KEY, tab); } catch { /* egal */ }
+}
+document.querySelectorAll('[role=tab]').forEach((b) => {
+  b.addEventListener('click', () => {
+    showTab(b.dataset.tab);
+    window.scrollTo(0, 0);
+  });
+  b.addEventListener('keydown', (e) => {
+    const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    showTab(TABS[(TABS.indexOf(tab) + step + TABS.length) % TABS.length], true);
+  });
+});
+$('gotoCv').addEventListener('click', () => {
+  showTab('cv');
+  $('vorname').scrollIntoView({ block: 'center' });
+  $('vorname').focus();
+});
 
 /* ---------- Formular ---------- */
 function fillInputs() {
@@ -689,16 +945,18 @@ function changed() {
   renderPreview();
   saveSoon();
 }
-$('form').addEventListener('submit', (e) => e.preventDefault());
-$('form').addEventListener('input', (e) => {
+document.querySelectorAll('form').forEach((f) => f.addEventListener('submit', (e) => e.preventDefault()));
+function onField(e) {
   const f = e.target.dataset?.f;
   if (!f) return;
   state[f] = e.target.value;
   if (f === 'wohnort') $('ortUnterschrift').placeholder = state.wohnort;
   changed();
-});
+}
+document.addEventListener('input', onField);
+document.addEventListener('change', (e) => { if (e.target.tagName === 'SELECT') onField(e); });
 
-/* Schulzeilen */
+/* Tabellenzeilen */
 function renderRows(table, focus) {
   const box = document.querySelector(`[data-table="${table}"]`);
   const list = state[table];
@@ -938,40 +1196,48 @@ async function applySignature() {
   }
 }
 
-/* ---------- Word-Export ---------- */
+/* ---------- Word-Export: jeweils das Dokument der offenen Registerkarte ---------- */
 function dataUrlBytes(url) {
   const bin = atob(url.slice(url.indexOf(',') + 1));
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
 }
-const FINISHED = {
-  gesendet: 'Die Word-Datei wurde weitergegeben.',
-  abgebrochen: 'Senden abgebrochen. Deine Angaben sind noch da.',
-  heruntergeladen: 'Die Word-Datei liegt in deinem Download-Ordner.',
-};
-if (canSend(WORD_TYPE, 'x.docx')) $('btnWord').textContent = 'Word senden an …';
+const SHARE_WORD = canSend(WORD_TYPE, 'x.docx');
+function updateWordLabel() {
+  const doc = tab === 'cv' ? 'Lebenslauf' : 'Schreiben';
+  $('btnWord').textContent = SHARE_WORD ? `${doc} senden an …` : `${doc} als Word`;
+}
+const ABGEBROCHEN = 'Senden abgebrochen. Deine Angaben sind noch da.';
 $('btnWord').addEventListener('click', async () => {
   const missing = !state.vorname.trim() ? 'vorname' : !state.nachname.trim() ? 'nachname' : '';
   if (missing) {
-    say('Trage zuerst deinen Vor- und Nachnamen ein.', true);
+    showTab('cv');
+    say('Trage zuerst im Lebenslauf deinen Vor- und Nachnamen ein.', true);
     $(missing).focus();
     return;
   }
-  const bytes = window.LebenslaufDocx.build({
-    ...model(),
-    foto: fotoJpeg ? dataUrlBytes(fotoJpeg) : null,
-    unterschrift: state.unterschrift ? dataUrlBytes(state.unterschrift) : null,
-  });
-  say(FINISHED[await deliver(new Blob([bytes], { type: WORD_TYPE }), fileStem() + '.docx')]);
+  const unterschrift = state.unterschrift ? dataUrlBytes(state.unterschrift) : null;
+  const isCv = tab === 'cv';
+  const bytes = isCv
+    ? window.LebenslaufDocx.build({ ...model(), foto: fotoJpeg ? dataUrlBytes(fotoJpeg) : null, unterschrift })
+    : window.LebenslaufDocx.buildLetter({ ...letterModel(), unterschrift });
+  const doc = isCv ? 'Der Lebenslauf' : 'Das Motivationsschreiben';
+  const how = await deliver(new Blob([bytes], { type: WORD_TYPE }),
+    fileName(isCv ? 'Lebenslauf' : 'Motivationsschreiben', '.docx'));
+  say({
+    gesendet: `${doc} wurde weitergegeben.`,
+    abgebrochen: ABGEBROCHEN,
+    heruntergeladen: `${doc} liegt in deinem Download-Ordner.`,
+  }[how]);
 });
 
-/* ---------- Stand als Datei ---------- */
+/* ---------- Stand als Datei: Lebenslauf und Schreiben zusammen ---------- */
 $('btnSave').addEventListener('click', async () => {
   const data = JSON.stringify({ art: 'lebenslauf', version: 1, ...state });
-  const how = await deliver(new Blob([data], { type: 'application/json' }), fileStem() + '.json');
-  say(how === 'abgebrochen' ? FINISHED.abgebrochen
-    : 'Bewahre die Datei gut auf: Darin stehen deine Daten und dein Foto. Mit «Stand laden» arbeitest du weiter.');
+  const how = await deliver(new Blob([data], { type: 'application/json' }), fileName('Bewerbung', '.json'));
+  say(how === 'abgebrochen' ? ABGEBROCHEN
+    : 'Bewahre die Datei gut auf: Darin stehen Lebenslauf, Schreiben und Foto. Mit «Stand laden» arbeitest du weiter.');
 });
 $('fileLoad').addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -991,7 +1257,7 @@ $('fileLoad').addEventListener('change', async (e) => {
   }
 });
 $('btnClear').addEventListener('click', async () => {
-  if (!confirm('Alle Angaben, das Foto und die Unterschrift in diesem Browser löschen?')) return;
+  if (!confirm('Lebenslauf, Motivationsschreiben, Foto und Unterschrift in diesem Browser löschen?')) return;
   try { localStorage.removeItem(KEY); } catch { /* nichts gespeichert */ }
   state = blank();
   await applyAll();
@@ -1019,6 +1285,9 @@ async function applyAll() {
   } catch {
     state = blank();
   }
+  let startTab = 'cv';
+  try { startTab = localStorage.getItem(TAB_KEY) || 'cv'; } catch { /* egal */ }
+  showTab(startTab);
   await applyAll();
 })();
 </script>
