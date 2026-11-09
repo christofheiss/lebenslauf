@@ -146,9 +146,10 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
         <label class="field">PLZ <input data-f="plz" inputmode="numeric" maxlength="10"></label>
         <label class="field">Wohnort <input data-f="wohnort" maxlength="60"></label>
         <label class="field">Geburtsdatum <input data-f="geburtsdatum" type="date"></label>
-        <label class="field">Heimatort / Nationalität <input data-f="heimatort" maxlength="80"></label>
+        <label class="field">Heimatort <input data-f="heimatort" maxlength="80"></label>
+        <label class="field">Nationalität <input data-f="nationalitaet" maxlength="80"></label>
         <label class="field">Telefon <input data-f="telefon" type="tel" maxlength="30"></label>
-        <label class="field">E-Mail <input data-f="email" type="email" maxlength="100"></label>
+        <label class="field wide">E-Mail <input data-f="email" type="email" maxlength="100"></label>
         <label class="field wide">Sprachen <input data-f="sprachen" maxlength="150" placeholder="z. B. Deutsch, Englisch, Französisch"></label>
       </div>
     </section>
@@ -457,7 +458,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 
 const KEY = 'lebenslauf-3a-v1';
 const TEXT_FIELDS = ['vorname', 'nachname', 'strasse', 'plz', 'wohnort', 'geburtsdatum', 'heimatort',
-  'sprachen', 'telefon', 'email', 'interessen', 'ortUnterschrift', 'datum'];
+  'nationalitaet', 'sprachen', 'telefon', 'email', 'interessen', 'ortUnterschrift', 'datum'];
 const MAX_ROWS = 20;
 const $ = (id) => document.getElementById(id);
 
@@ -596,7 +597,8 @@ function model() {
     ['Strasse', t(state.strasse)],
     ['Wohnort', [t(state.plz), t(state.wohnort)].filter(Boolean).join(' ')],
     ['Geburtsdatum', longDate(state.geburtsdatum)],
-    ['Heimatort / Nationalität', t(state.heimatort)],
+    ['Heimatort', t(state.heimatort)],
+    ['Nationalität', t(state.nationalitaet)],
     ['Sprachen', t(state.sprachen)],
     ['Telefon', t(state.telefon)],
     ['E-Mail', t(state.email)],
