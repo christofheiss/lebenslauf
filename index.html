@@ -66,6 +66,8 @@ textarea { resize: vertical; }
 .t-ref .rowhead, .t-ref .schoolrow { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; }
 .rowhead { font-size: .9rem; font-weight: 600; padding-right: 126px; grid-template-columns: 8.5rem minmax(0, 1.4fr) minmax(0, 1fr); }
 .t-ref .rowhead { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); }
+.t-lang .schoolrow { grid-template-columns: minmax(0, 1fr) 10rem auto; }
+.t-lang .rowhead { grid-template-columns: minmax(0, 1fr) 10rem; }
 .schoolrow { margin-bottom: 6px; }
 .rowbtns { display: flex; }
 .rowbtns button { min-width: 40px; padding: 0; border-color: transparent; background: transparent; color: var(--muted); }
@@ -88,15 +90,23 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 .preview { position: sticky; top: 150px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .sheetwrap { container-type: inline-size; width: 100%; max-width: calc((100vh - 190px) / 1.414); margin-inline: auto; }
 .sheet { background: #fff; color: #000; box-shadow: 0 1px 6px rgba(0, 0, 0, .22); min-height: 141.4cqw; padding: 11.9cqw; font: 1.85cqw/1.35 Arial, Helvetica, sans-serif; }
-.s-head { display: flex; justify-content: space-between; gap: 2cqw; }
-.s-head > div { flex: 1; min-width: 0; }
-.s-title { font-size: 3.1cqw; font-weight: 700; margin-bottom: 2cqw; }
-.s-h { font-size: 2.1cqw; font-weight: 700; border-bottom: .12cqw solid #000; padding-bottom: .3cqw; margin: 2.8cqw 0 1cqw; }
-.s-head .s-h { margin-top: 0; }
-.s-row { display: grid; grid-template-columns: 22.7cqw minmax(0, 1fr); margin-bottom: .45cqw; overflow-wrap: anywhere; }
-.s-photo { width: 16.67cqw; height: 22.22cqw; object-fit: cover; flex: none; }
-.s-nophoto { width: 16.67cqw; height: 22.22cqw; flex: none; border: .1cqw dashed #aaa; color: #888; display: grid; place-items: center; font-size: 1.5cqw; }
-.s-line { margin-bottom: .45cqw; overflow-wrap: anywhere; }
+/* Lebenslauf: farbige, nummerierte Abschnitte mit Balken links */
+.c-title { font-size: 5.2cqw; font-weight: 700; color: #14213d; line-height: 1.1; padding-bottom: 1.2cqw; border-bottom: .4cqw solid #3b5aa8; margin-bottom: 3cqw; }
+.c-sec { border-left: .55cqw solid var(--c); padding-left: 2.2cqw; margin-bottom: 2.6cqw; }
+.c-h { display: flex; align-items: center; gap: 1.4cqw; color: var(--c); font-size: 2.7cqw; font-weight: 700; margin-bottom: 1cqw; }
+.c-n { width: 3.4cqw; height: 3.4cqw; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; font-size: 1.8cqw; flex: none; }
+.c-pers { display: flex; justify-content: space-between; gap: 2cqw; }
+.c-pers > :first-child { flex: 1; min-width: 0; }
+.c-row { display: grid; grid-template-columns: 19cqw minmax(0, 1fr); margin-bottom: .6cqw; overflow-wrap: anywhere; }
+.c-row > :first-child { color: #555; }
+.c-row3 { display: grid; grid-template-columns: 19cqw minmax(0, 1fr) 16cqw; gap: 0 1cqw; margin-bottom: .6cqw; overflow-wrap: anywhere; }
+.c-row3.c-cap { color: #666; font-size: 1.5cqw; margin-bottom: .4cqw; }
+.c-lang { display: grid; grid-template-columns: 26cqw repeat(3, 10cqw); align-items: center; margin-bottom: .6cqw; overflow-wrap: anywhere; }
+.c-opt { display: flex; align-items: center; gap: .8cqw; }
+.c-box { width: 1.9cqw; height: 1.9cqw; border: .15cqw solid #222; border-radius: .3cqw; display: grid; place-items: center; font-size: 1.5cqw; line-height: 1; flex: none; }
+.c-text { overflow-wrap: anywhere; }
+.c-photo { width: 16.67cqw; height: 22.22cqw; object-fit: cover; flex: none; border-radius: .6cqw; }
+.c-nophoto { width: 16.67cqw; height: 22.22cqw; flex: none; border: .2cqw dashed #3b5aa8; border-radius: .8cqw; color: #555; display: grid; place-items: center; font-size: 1.6cqw; }
 .s-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 6cqw; margin-top: 6cqw; }
 .s-signbox { min-height: 7.2cqw; border-bottom: .1cqw solid #000; display: flex; align-items: flex-end; overflow-wrap: anywhere; }
 .s-signbox img { width: 100%; max-width: 28.5cqw; display: block; }
@@ -118,8 +128,8 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 @media (max-width: 560px) {
   .bar { position: static; }
   .grid2, .grid3 { grid-template-columns: minmax(0, 1fr); }
-  .rowhead, .t-ref .rowhead { display: none; }
-  .schoolrow, .t-ref .schoolrow { grid-template-columns: minmax(0, 1fr); padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .rowhead, .t-ref .rowhead, .t-lang .rowhead { display: none; }
+  .schoolrow, .t-ref .schoolrow, .t-lang .schoolrow { grid-template-columns: minmax(0, 1fr); padding-bottom: 8px; border-bottom: 1px solid var(--line); }
   .photo { flex-direction: column; }
 }
 </style>
@@ -175,29 +185,44 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
         <label class="field">Nationalität <input data-f="nationalitaet" maxlength="80"></label>
         <label class="field">Telefon <input data-f="telefon" type="tel" maxlength="30"></label>
         <label class="field wide">E-Mail <input data-f="email" type="email" maxlength="100"></label>
-        <label class="field wide">Sprachen <input data-f="sprachen" maxlength="150" placeholder="z. B. Deutsch, Englisch, Französisch"></label>
       </div>
     </section>
 
     <section class="card">
       <h2>Schulischer Werdegang</h2>
       <p class="hint">Beginne mit der ersten Schule. Mit den Pfeilen änderst du die Reihenfolge.</p>
-      <div class="rowhead" aria-hidden="true"><span>Zeit</span><span>Schule</span><span>Ort</span></div>
+      <div class="rowhead" aria-hidden="true"><span>Von – bis</span><span>Schule</span><span>Ort</span></div>
       <div data-table="schule"></div>
       <button type="button" class="addrow" data-add="schule">Schule hinzufügen</button>
     </section>
 
     <section class="card">
       <h2>Schnupperlehren</h2>
-      <div class="rowhead" aria-hidden="true"><span>Zeit</span><span>Beruf</span><span>Betrieb und Ort</span></div>
+      <div class="rowhead" aria-hidden="true"><span>Wann</span><span>Beruf</span><span>Betrieb und Ort</span></div>
       <div data-table="schnupper"></div>
       <button type="button" class="addrow" data-add="schnupper">Schnupperlehre hinzufügen</button>
     </section>
 
+    <section class="card t-lang">
+      <h2>Sprachen</h2>
+      <p class="hint">Auch Sprachen, die du zu Hause sprichst, zählen.</p>
+      <div class="rowhead" aria-hidden="true"><span>Sprache</span><span>Wie gut?</span></div>
+      <div data-table="sprachen"></div>
+      <button type="button" class="addrow" data-add="sprachen">Sprache hinzufügen</button>
+    </section>
+
     <section class="card">
-      <h2>Interessen</h2>
-      <label class="field">Pro Zeile ein Interesse
-        <textarea data-f="interessen" rows="4" maxlength="800" placeholder="z. B. Unihockey im Verein&#10;Gitarre spielen"></textarea>
+      <h2>Hobbys</h2>
+      <label class="field">Pro Zeile ein Hobby
+        <textarea data-f="interessen" rows="3" maxlength="800" placeholder="z. B. Fussball im Verein&#10;Velo flicken"></textarea>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Stärken</h2>
+      <label class="field">Pro Zeile eine Stärke
+        <span class="hint">Am besten Stärken, die zum Beruf passen. Im Motivationsschreiben kannst du sie mit Beispielen zeigen.</span>
+        <textarea data-f="staerken" rows="3" maxlength="400" placeholder="z. B. hilfsbereit&#10;zuverlässig&#10;handwerklich geschickt"></textarea>
       </label>
     </section>
 
@@ -311,10 +336,9 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 <script>
 /* Baut Word-Dateien (.docx) ohne Bibliothek: den Lebenslauf und das Motivationsschreiben.
    Eine .docx ist ein ZIP-Archiv mit XML-Dateien; hier ungepackt gespeichert.
-   Lebenslauf: { name, personalien: [[Bezeichnung, Wert]],
-                 schule, schnupper, referenzen: je [{ links, rechts }],
-                 interessen: [String], ortDatum, foto: Uint8Array|null (JPEG),
-                 unterschrift: Uint8Array|null (PNG) }
+   Lebenslauf: { name, personalien: [[Bezeichnung, Wert]], personalColor,
+                 sections: [{ n, title, color, kind: 'table'|'lang'|'text', head, rows, text }],
+                 ortDatum, foto: Uint8Array|null (JPEG), unterschrift: Uint8Array|null (PNG) }
    Schreiben:  { name, absender: [String], empfaenger: [String], ortDatum, betreff,
                  anrede, absaetze: [String], beilagen: [String], unterschrift } */
 (function (root) {
@@ -329,8 +353,10 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   const HEAD = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
 
   // Satzspiegel A4 mit 2.5 cm Rand: 9070 DXA Breite
-  const COL_LABEL = 2700, COL_VALUE = 4100, COL_PHOTO = 2270;
-  const COL_REST = COL_VALUE + COL_PHOTO;
+  const W3 = [2500, 4300, 2270];        // Personalien (mit Foto), Schule, Schnupperlehren, Referenzen
+  const WL = [3300, 1450, 1600, 2720];  // Sprachen: Sprache, gut, mittel, wenig
+  const W1 = [9070];                    // Hobbys, Stärken
+  const LEVELS = ['gut', 'mittel', 'wenig'];
   const CM = 360000; // EMU
 
   function esc(s) {
@@ -375,23 +401,67 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   }
 
   /* ---------- Lebenslauf ---------- */
-  function headTable(m) {
+  const KEEP = '<w:keepNext/>';
+  const sum = (w) => w.reduce((a, b) => a + b, 0);
+  const grey = (text, size = 22) =>
+    `<w:r><w:rPr><w:color w:val="555555"/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`;
+  // Kästchen wie bei Word-Kontrollkästchen (Schrift MS Gothic)
+  const box = (on) =>
+    `<w:r><w:rPr><w:rFonts w:ascii="MS Gothic" w:hAnsi="MS Gothic" w:eastAsia="MS Gothic"/></w:rPr><w:t>${on ? '☒' : '☐'}</w:t></w:r>`;
+
+  // Abschnitt = Tabelle ohne Linien, nur mit einem farbigen Balken links
+  function secTable(color, widths, rows) {
+    return '<w:tbl><w:tblPr>' +
+      `<w:tblW w:w="${sum(widths)}" w:type="dxa"/>` +
+      '<w:tblBorders><w:top w:val="nil"/>' +
+      `<w:left w:val="single" w:sz="24" w:space="0" w:color="${color}"/>` +
+      '<w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>' +
+      '<w:tblLayout w:type="fixed"/>' +
+      '<w:tblCellMar><w:top w:w="40" w:type="dxa"/><w:left w:w="220" w:type="dxa"/>' +
+      '<w:bottom w:w="40" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar>' +
+      '</w:tblPr><w:tblGrid>' + widths.map((w) => `<w:gridCol w:w="${w}"/>`).join('') +
+      '</w:tblGrid>' + rows.join('') + '</w:tbl>';
+  }
+  // Überschrift: Nummer weiss auf Farbe, dann der Titel in der Farbe
+  const heading = (n, title, color) => para(
+    `<w:r><w:rPr><w:b/><w:bCs/><w:color w:val="FFFFFF"/><w:sz w:val="22"/><w:szCs w:val="22"/>` +
+    `<w:shd w:val="clear" w:color="auto" w:fill="${color}"/></w:rPr><w:t xml:space="preserve"> ${n} </w:t></w:r>` +
+    `<w:r><w:rPr><w:b/><w:bCs/><w:color w:val="${color}"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr>` +
+    `<w:t xml:space="preserve">  ${esc(title)}</w:t></w:r>`, '', KEEP + after(80));
+  const headRow = (widths, n, title, color) =>
+    row(cell(sum(widths), heading(n, title, color), widths.length > 1 ? `<w:gridSpan w:val="${widths.length}"/>` : ''));
+  // Zeile mit fertigen Runs pro Zelle; ausser der letzten Zeile bleibt alles beim nächsten
+  const dataRow = (widths, runs, last) =>
+    row(runs.map((r, i) => cell(widths[i], para(r, '', last ? '' : KEEP))).join(''));
+
+  function personalTable(m) {
     const photoMar = '<w:tcMar><w:right w:w="0" w:type="dxa"/></w:tcMar>';
     const photo = m.foto
       ? para(image('rId3', 1, 'Foto', 'Foto von ' + m.name, Math.round(3.5 * CM), Math.round(3.5 * 4 / 3 * CM)), '', '<w:jc w:val="right"/>')
       : para();
-    const span = '<w:gridSpan w:val="2"/>';
     const rows = [
-      row(cell(COL_LABEL + COL_VALUE, para(run('Lebenslauf'), 'Title'), span) +
-          cell(COL_PHOTO, photo, '<w:vMerge w:val="restart"/>' + photoMar)),
-      row(cell(COL_LABEL + COL_VALUE, para(run('Personalien'), 'Heading1'), span) +
-          cell(COL_PHOTO, para(), '<w:vMerge/>' + photoMar)),
+      row(cell(W3[0] + W3[1], heading(1, 'Personalien', m.personalColor), '<w:gridSpan w:val="2"/>') +
+          cell(W3[2], photo, '<w:vMerge w:val="restart"/>' + photoMar)),
     ];
     for (const [label, value] of m.personalien) {
-      rows.push(row(cell(COL_LABEL, para(run(label))) + cell(COL_VALUE, para(run(value))) +
-        cell(COL_PHOTO, para(), '<w:vMerge/>' + photoMar)));
+      rows.push(row(cell(W3[0], para(grey(label))) + cell(W3[1], para(run(value))) +
+        cell(W3[2], para(), '<w:vMerge/>' + photoMar)));
     }
-    return table([COL_LABEL, COL_VALUE, COL_PHOTO], rows);
+    return secTable(m.personalColor, W3, rows);
+  }
+
+  function sectionTable(s) {
+    if (s.kind === 'text') {
+      return secTable(s.color, W1, [headRow(W1, s.n, s.title, s.color), row(cell(W1[0], para(run(s.text))))]);
+    }
+    if (s.kind === 'lang') {
+      return secTable(s.color, WL, [headRow(WL, s.n, s.title, s.color),
+        ...s.rows.map((r, i) => dataRow(WL,
+          [run(r.sprache), ...LEVELS.map((l) => box(r.niveau === l) + run(' ' + l))], i === s.rows.length - 1))]);
+    }
+    return secTable(s.color, W3, [headRow(W3, s.n, s.title, s.color),
+      dataRow(W3, s.head.map((h) => grey(h, 18)), false),
+      ...s.rows.map((r, i) => dataRow(W3, r.map(run), i === s.rows.length - 1))]);
   }
 
   function signTable(m) {
@@ -411,21 +481,11 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   }
 
   function cvBody(m) {
-    const body = [headTable(m)];
-    const block = (title, rows) => {
-      if (!rows.length) return;
-      body.push(para(run(title), 'Heading1'));
-      body.push(table([COL_LABEL, COL_REST], rows.map((r) =>
-        row(cell(COL_LABEL, para(run(r.links))) + cell(COL_REST, para(run(r.rechts)))))));
-    };
-    block('Schulischer Werdegang', m.schule);
-    block('Schnupperlehren', m.schnupper);
-    if (m.interessen.length) {
-      body.push(para(run('Interessen'), 'Heading1'));
-      for (const line of m.interessen) body.push(para(run(line), '', after(40)));
-    }
-    block('Referenzen', m.referenzen);
-    body.push(para('', '', '<w:keepNext/><w:spacing w:before="480"/>'));
+    // Leerer Absatz trennt die Abschnitt-Tabellen, sonst klebt Word sie zusammen
+    const gap = para('', '', '<w:spacing w:before="0" w:after="0" w:line="220" w:lineRule="exact"/>');
+    const body = [para(run('Lebenslauf'), 'Title'), personalTable(m), gap];
+    for (const s of m.sections) body.push(sectionTable(s), gap);
+    body.push(para('', '', '<w:keepNext/><w:spacing w:before="360"/>'));
     body.push(signTable(m));
     body.push(para('', '', '<w:spacing w:line="20" w:lineRule="exact"/>'));
     return body.join('');
@@ -468,7 +528,9 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/>' +
     '<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/></w:rPr></w:style>' +
     '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>' +
-    '<w:pPr><w:keepNext/><w:spacing w:before="0" w:after="200"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>' +
+    '<w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="18" w:space="4" w:color="3B5AA8"/></w:pBdr>' +
+    '<w:spacing w:before="0" w:after="280"/></w:pPr>' +
+    '<w:rPr><w:b/><w:bCs/><w:color w:val="14213D"/><w:sz w:val="56"/><w:szCs w:val="56"/></w:rPr></w:style>' +
     '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>' +
     '<w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr>' +
     '<w:spacing w:before="320" w:after="100"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:style>' +
@@ -602,7 +664,7 @@ const KEY = 'lebenslauf-3a-v1';
 const TAB_KEY = 'lebenslauf-3a-tab';
 const BRIEF_TEXTS = ['briefEinstieg', 'briefBeruf', 'briefBetrieb', 'briefStaerken', 'briefSchluss'];
 const TEXT_FIELDS = ['vorname', 'nachname', 'strasse', 'plz', 'wohnort', 'geburtsdatum', 'heimatort',
-  'nationalitaet', 'sprachen', 'telefon', 'email', 'interessen', 'ortUnterschrift', 'datum',
+  'nationalitaet', 'telefon', 'email', 'interessen', 'staerken', 'ortUnterschrift', 'datum',
   'briefFirma', 'briefAnrede', 'briefVorname', 'briefNachname', 'briefStrasse', 'briefPlz', 'briefOrt',
   'briefBetreff', ...BRIEF_TEXTS, 'briefBeilagen'];
 const ANREDEN = ['', 'frau', 'herr'];
@@ -613,7 +675,8 @@ function today() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
-/* Die drei Tabellen im Formular: [Schlüssel, Bezeichnung, maximale Länge] */
+const LEVELS = ['gut', 'mittel', 'wenig'];
+/* Die Tabellen im Formular: [Schlüssel, Bezeichnung, maximale Länge, Art] */
 const TABLES = {
   schule: {
     cols: [['zeit', 'Zeit', 40], ['schule', 'Schule', 120], ['ort', 'Ort', 60]],
@@ -624,6 +687,11 @@ const TABLES = {
     cols: [['zeit', 'Zeit', 40], ['beruf', 'Beruf', 120], ['betrieb', 'Betrieb und Ort', 120]],
     rows: 2,
     hints: [['z. B. März 2026', 'z. B. Fachperson Betreuung', 'z. B. Kita Sonne, Sursee']],
+  },
+  sprachen: {
+    cols: [['sprache', 'Sprache', 40], ['niveau', 'Wie gut?', 10, 'level']],
+    rows: 3,
+    hints: [['z. B. Deutsch'], ['z. B. Englisch'], ['z. B. Französisch']],
   },
   referenzen: {
     cols: [['name', 'Name', 80], ['funktion', 'Funktion und Betrieb', 120], ['kontakt', 'Telefon oder E-Mail', 100]],
@@ -675,10 +743,18 @@ function normalize(raw) {
   const str = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
   for (const f of TEXT_FIELDS) if (typeof raw[f] === 'string') s[f] = str(raw[f], 1500);
   if (!ANREDEN.includes(s.briefAnrede)) s.briefAnrede = '';
+  // Ältere Stände: Sprachen waren ein Textfeld «Deutsch, Englisch»
+  if (typeof raw.sprachen === 'string') {
+    const list = raw.sprachen.split(/[,;\n]/).map((x) => x.trim()).filter(Boolean).slice(0, MAX_ROWS);
+    if (list.length) s.sprachen = list.map((x) => ({ sprache: x.slice(0, 40), niveau: '' }));
+  }
   for (const t in TABLES) {
     if (!Array.isArray(raw[t]) || !raw[t].length) continue;
     s[t] = raw[t].slice(0, MAX_ROWS).map((r) =>
-      Object.fromEntries(TABLES[t].cols.map(([k, , max]) => [k, str(r?.[k], max)])));
+      Object.fromEntries(TABLES[t].cols.map(([k, , max, type]) => {
+        const v = str(r?.[k], max);
+        return [k, type === 'level' && !LEVELS.includes(v) ? '' : v];
+      })));
   }
   const f = raw.foto;
   if (f && typeof f.src === 'string' && /^data:image\/(jpeg|png);base64,/.test(f.src)) {
@@ -745,32 +821,36 @@ const fullName = () => [t(state.vorname), t(state.nachname)].filter(Boolean).joi
 const plzOrt = (plz, ort) => [t(plz), t(ort)].filter(Boolean).join(' ');
 const ortDatum = () => [t(state.ortUnterschrift) || t(state.wohnort), longDate(state.datum)].filter(Boolean).join(', ');
 
+/* Farbe pro Abschnitt (ohne #, so braucht sie auch Word). Die Nummern ergeben sich
+   aus den ausgefüllten Abschnitten, die Farben bleiben fest. */
+const COLORS = {
+  Personalien: '2B4FD8', Schule: 'B4471E', Schnupperlehren: '9A6B00', Sprachen: '3A7D3A',
+  Hobbys: '7B2FD0', 'Stärken': '2F6F6A', Referenzen: '4B5B78',
+};
 function model() {
   const personalien = [
     ['Vorname', t(state.vorname)],
     ['Nachname', t(state.nachname)],
     ['Strasse', t(state.strasse)],
-    ['Wohnort', plzOrt(state.plz, state.wohnort)],
-    ['Geburtsdatum', longDate(state.geburtsdatum)],
-    ['Heimatort', t(state.heimatort)],
-    ['Nationalität', t(state.nationalitaet)],
-    ['Sprachen', t(state.sprachen)],
+    ['PLZ und Ort', plzOrt(state.plz, state.wohnort)],
     ['Telefon', t(state.telefon)],
     ['E-Mail', t(state.email)],
+    ['Geburtsdatum', longDate(state.geburtsdatum)],
+    ['Nationalität', t(state.nationalitaet)],
+    ['Heimatort', t(state.heimatort)],
   ].filter(([, v]) => v);
-  // Zeile der Tabelle: erstes Feld links, die übrigen rechts mit Komma verbunden
-  const rows = (list, first, ...rest) => list
-    .map((r) => ({ links: t(r[first]), rechts: rest.map((k) => t(r[k])).filter(Boolean).join(', ') }))
-    .filter((r) => r.links || r.rechts);
-  return {
-    name: fullName(),
-    personalien,
-    schule: rows(state.schule, 'zeit', 'schule', 'ort'),
-    schnupper: rows(state.schnupper, 'zeit', 'beruf', 'betrieb'),
-    referenzen: rows(state.referenzen, 'name', 'funktion', 'kontakt'),
-    interessen: state.interessen.split('\n').map(t).filter(Boolean),
-    ortDatum: ortDatum(),
-  };
+  const rows3 = (list, ...keys) => list.map((r) => keys.map((k) => t(r[k]))).filter((c) => c.some(Boolean));
+  const commaList = (text) => text.split('\n').map(t).filter(Boolean).join(', ');
+  const sections = [
+    { title: 'Schule', kind: 'table', head: ['Von – bis', 'Schule', 'Ort'], rows: rows3(state.schule, 'zeit', 'schule', 'ort') },
+    { title: 'Schnupperlehren', kind: 'table', head: ['Wann', 'Beruf', 'Betrieb und Ort'], rows: rows3(state.schnupper, 'zeit', 'beruf', 'betrieb') },
+    { title: 'Sprachen', kind: 'lang', rows: state.sprachen.map((r) => ({ sprache: t(r.sprache), niveau: r.niveau })).filter((r) => r.sprache) },
+    { title: 'Hobbys', kind: 'text', text: commaList(state.interessen) },
+    { title: 'Stärken', kind: 'text', text: commaList(state.staerken) },
+    { title: 'Referenzen', kind: 'table', head: ['Name', 'Funktion und Betrieb', 'Telefon oder E-Mail'], rows: rows3(state.referenzen, 'name', 'funktion', 'kontakt') },
+  ].filter((s) => (s.kind === 'text' ? s.text : s.rows.length))
+    .map((s, i) => ({ ...s, n: i + 2, color: COLORS[s.title] }));
+  return { name: fullName(), personalien, personalColor: COLORS.Personalien, sections, ortDatum: ortDatum() };
 }
 
 function letterModel() {
@@ -800,10 +880,18 @@ function el(tag, cls, text) {
   if (text !== undefined) e.textContent = text;
   return e;
 }
-function sRow(a, b) {
-  const r = el('div', 's-row');
-  r.append(el('div', '', a), el('div', '', b));
-  return r;
+function cvSection(n, title, color) {
+  const sec = el('section', 'c-sec');
+  sec.style.setProperty('--c', '#' + color);
+  const h = el('div', 'c-h');
+  h.append(el('span', 'c-n', String(n)), el('span', '', title));
+  sec.append(h);
+  return sec;
+}
+function cells(cls, list) {
+  const line = el('div', cls);
+  list.forEach((c) => line.append(el('div', '', c)));
+  return line;
 }
 function signatureImg(alt) {
   const img = el('img');
@@ -814,35 +902,45 @@ function signatureImg(alt) {
 function renderCv() {
   const m = model();
   const sheet = $('sheet');
-  sheet.replaceChildren();
+  sheet.replaceChildren(el('div', 'c-title', 'Lebenslauf'));
 
-  const head = el('div', 's-head');
+  const pers = cvSection(1, 'Personalien', m.personalColor);
+  const wrap = el('div', 'c-pers');
   const left = el('div');
-  left.append(el('div', 's-title', 'Lebenslauf'), el('div', 's-h', 'Personalien'));
-  for (const [a, b] of m.personalien) left.append(sRow(a, b));
-  head.append(left);
+  for (const row of m.personalien) left.append(cells('c-row', row));
+  wrap.append(left);
   if (fotoJpeg) {
-    const img = el('img', 's-photo');
+    const img = el('img', 'c-photo');
     img.src = fotoJpeg;
     img.alt = 'Dein Foto';
-    head.append(img);
+    wrap.append(img);
   } else {
-    head.append(el('div', 's-nophoto', 'Foto'));
+    wrap.append(el('div', 'c-nophoto', 'Foto'));
   }
-  sheet.append(head);
+  pers.append(wrap);
+  sheet.append(pers);
 
-  const block = (title, rows) => {
-    if (!rows.length) return;
-    sheet.append(el('div', 's-h', title));
-    for (const r of rows) sheet.append(sRow(r.links, r.rechts));
-  };
-  block('Schulischer Werdegang', m.schule);
-  block('Schnupperlehren', m.schnupper);
-  if (m.interessen.length) {
-    sheet.append(el('div', 's-h', 'Interessen'));
-    for (const line of m.interessen) sheet.append(el('div', 's-line', line));
+  for (const s of m.sections) {
+    const sec = cvSection(s.n, s.title, s.color);
+    if (s.kind === 'text') {
+      sec.append(el('div', 'c-text', s.text));
+    } else if (s.kind === 'lang') {
+      for (const r of s.rows) {
+        const line = el('div', 'c-lang');
+        line.append(el('div', '', r.sprache));
+        for (const l of LEVELS) {
+          const opt = el('div', 'c-opt');
+          opt.append(el('span', 'c-box', r.niveau === l ? '✕' : ''), el('span', '', l));
+          line.append(opt);
+        }
+        sec.append(line);
+      }
+    } else {
+      sec.append(cells('c-row3 c-cap', s.head));
+      for (const r of s.rows) sec.append(cells('c-row3', r));
+    }
+    sheet.append(sec);
   }
-  block('Referenzen', m.referenzen);
 
   const sign = el('div', 's-sign');
   const a = el('div'), b = el('div');
@@ -963,13 +1061,23 @@ function renderRows(table, focus) {
   box.replaceChildren();
   list.forEach((r, i) => {
     const line = el('div', 'schoolrow');
-    TABLES[table].cols.forEach(([k, label, max], col) => {
-      const inp = el('input');
+    TABLES[table].cols.forEach(([k, label, max, type], col) => {
+      let inp;
+      if (type === 'level') {
+        inp = el('select');
+        [['', '–'], ...LEVELS.map((l) => [l, l])].forEach(([v, text]) => {
+          const o = el('option', '', text);
+          o.value = v;
+          inp.append(o);
+        });
+      } else {
+        inp = el('input');
+        inp.maxLength = max;
+        inp.placeholder = TABLES[table].hints[i]?.[col] || '';
+      }
       inp.value = r[k];
-      inp.maxLength = max;
       inp.dataset.row = i;
       inp.dataset.k = k;
-      inp.placeholder = TABLES[table].hints[i]?.[col] || '';
       inp.setAttribute('aria-label', `${label}, Zeile ${i + 1}`);
       line.append(inp);
     });
@@ -992,12 +1100,14 @@ function renderRows(table, focus) {
 }
 document.querySelectorAll('[data-table]').forEach((box) => {
   const table = box.dataset.table;
-  box.addEventListener('input', (e) => {
+  const onCell = (e) => {
     const { row, k } = e.target.dataset;
     if (k === undefined) return;
     state[table][+row][k] = e.target.value;
     changed();
-  });
+  };
+  box.addEventListener('input', onCell);
+  box.addEventListener('change', (e) => { if (e.target.tagName === 'SELECT') onCell(e); });
   box.addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b) return;
