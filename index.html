@@ -90,23 +90,21 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 .preview { position: sticky; top: 150px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .sheetwrap { container-type: inline-size; width: 100%; max-width: calc((100vh - 190px) / 1.414); margin-inline: auto; }
 .sheet { background: #fff; color: #000; box-shadow: 0 1px 6px rgba(0, 0, 0, .22); min-height: 141.4cqw; padding: 11.9cqw; font: 1.85cqw/1.35 Arial, Helvetica, sans-serif; }
-/* Lebenslauf: farbige, nummerierte Abschnitte mit Balken links */
-.c-title { font-size: 5.2cqw; font-weight: 700; color: #14213d; line-height: 1.1; padding-bottom: 1.2cqw; border-bottom: .4cqw solid #3b5aa8; margin-bottom: 3cqw; }
-.c-sec { border-left: .55cqw solid var(--c); padding-left: 2.2cqw; margin-bottom: 2.6cqw; }
-.c-h { display: flex; align-items: center; gap: 1.4cqw; color: var(--c); font-size: 2.7cqw; font-weight: 700; margin-bottom: 1cqw; }
-.c-n { width: 3.4cqw; height: 3.4cqw; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; font-size: 1.8cqw; flex: none; }
-.c-pers { display: flex; justify-content: space-between; gap: 2cqw; }
+/* Lebenslauf: schlicht, wie die Word-Datei */
+.c-title { font-size: 3.4cqw; font-weight: 700; margin-bottom: 2cqw; }
+.c-sec { margin-bottom: 2.4cqw; }
+.c-h { font-size: 2.2cqw; font-weight: 700; border-bottom: .12cqw solid #000; padding-bottom: .3cqw; margin-bottom: 1cqw; }
+.c-pers { display: flex; justify-content: space-between; align-items: flex-start; gap: 2cqw; }
 .c-pers > :first-child { flex: 1; min-width: 0; }
 .c-row { display: grid; grid-template-columns: 19cqw minmax(0, 1fr); margin-bottom: .6cqw; overflow-wrap: anywhere; }
-.c-row > :first-child { color: #555; }
 .c-row3 { display: grid; grid-template-columns: 19cqw minmax(0, 1fr) 16cqw; gap: 0 1cqw; margin-bottom: .6cqw; overflow-wrap: anywhere; }
 .c-row3.c-cap { color: #666; font-size: 1.5cqw; margin-bottom: .4cqw; }
 .c-lang { display: grid; grid-template-columns: 26cqw repeat(3, 10cqw); align-items: center; margin-bottom: .6cqw; overflow-wrap: anywhere; }
 .c-opt { display: flex; align-items: center; gap: .8cqw; }
 .c-box { width: 1.9cqw; height: 1.9cqw; border: .15cqw solid #222; border-radius: .3cqw; display: grid; place-items: center; font-size: 1.5cqw; line-height: 1; flex: none; }
 .c-text { overflow-wrap: anywhere; }
-.c-photo { width: 16.67cqw; height: 22.22cqw; object-fit: cover; flex: none; border-radius: .6cqw; }
-.c-nophoto { width: 16.67cqw; height: 22.22cqw; flex: none; border: .2cqw dashed #3b5aa8; border-radius: .8cqw; color: #555; display: grid; place-items: center; font-size: 1.6cqw; }
+.c-photo { width: 16.67cqw; height: 22.22cqw; object-fit: cover; flex: none; }
+.c-nophoto { width: 16.67cqw; height: 22.22cqw; flex: none; border: .1cqw dashed #aaa; color: #888; display: grid; place-items: center; font-size: 1.5cqw; }
 .s-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 6cqw; margin-top: 6cqw; }
 .s-signbox { min-height: 7.2cqw; border-bottom: .1cqw solid #000; display: flex; align-items: flex-end; overflow-wrap: anywhere; }
 .s-signbox img { width: 100%; max-width: 28.5cqw; display: block; }
@@ -336,8 +334,8 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 <script>
 /* Baut Word-Dateien (.docx) ohne Bibliothek: den Lebenslauf und das Motivationsschreiben.
    Eine .docx ist ein ZIP-Archiv mit XML-Dateien; hier ungepackt gespeichert.
-   Lebenslauf: { name, personalien: [[Bezeichnung, Wert]], personalColor,
-                 sections: [{ n, title, color, kind: 'table'|'lang'|'text', head, rows, text }],
+   Lebenslauf: { name, personalien: [[Bezeichnung, Wert]],
+                 sections: [{ title, kind: 'table'|'lang'|'text', head, rows, text }],
                  ortDatum, foto: Uint8Array|null (JPEG), unterschrift: Uint8Array|null (PNG) }
    Schreiben:  { name, absender: [String], empfaenger: [String], ortDatum, betreff,
                  anrede, absaetze: [String], beilagen: [String], unterschrift } */
@@ -409,27 +407,11 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   const box = (on) =>
     `<w:r><w:rPr><w:rFonts w:ascii="MS Gothic" w:hAnsi="MS Gothic" w:eastAsia="MS Gothic"/></w:rPr><w:t>${on ? '☒' : '☐'}</w:t></w:r>`;
 
-  // Abschnitt = Tabelle ohne Linien, nur mit einem farbigen Balken links
-  function secTable(color, widths, rows) {
-    return '<w:tbl><w:tblPr>' +
-      `<w:tblW w:w="${sum(widths)}" w:type="dxa"/>` +
-      '<w:tblBorders><w:top w:val="nil"/>' +
-      `<w:left w:val="single" w:sz="24" w:space="0" w:color="${color}"/>` +
-      '<w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>' +
-      '<w:tblLayout w:type="fixed"/>' +
-      '<w:tblCellMar><w:top w:w="40" w:type="dxa"/><w:left w:w="220" w:type="dxa"/>' +
-      '<w:bottom w:w="40" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar>' +
-      '</w:tblPr><w:tblGrid>' + widths.map((w) => `<w:gridCol w:w="${w}"/>`).join('') +
-      '</w:tblGrid>' + rows.join('') + '</w:tbl>';
-  }
-  // Überschrift: Nummer weiss auf Farbe, dann der Titel in der Farbe
-  const heading = (n, title, color) => para(
-    `<w:r><w:rPr><w:b/><w:bCs/><w:color w:val="FFFFFF"/><w:sz w:val="22"/><w:szCs w:val="22"/>` +
-    `<w:shd w:val="clear" w:color="auto" w:fill="${color}"/></w:rPr><w:t xml:space="preserve"> ${n} </w:t></w:r>` +
-    `<w:r><w:rPr><w:b/><w:bCs/><w:color w:val="${color}"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr>` +
-    `<w:t xml:space="preserve">  ${esc(title)}</w:t></w:r>`, '', KEEP + after(80));
-  const headRow = (widths, n, title, color) =>
-    row(cell(sum(widths), heading(n, title, color), widths.length > 1 ? `<w:gridSpan w:val="${widths.length}"/>` : ''));
+  // Abschnitt = Tabelle ohne Linien; die Überschrift steht in der ersten Zeile
+  const secTable = (widths, rows) => table(widths, rows);
+  const heading = (title) => para(run(title), 'Heading1');
+  const headRow = (widths, title) =>
+    row(cell(sum(widths), heading(title), widths.length > 1 ? `<w:gridSpan w:val="${widths.length}"/>` : ''));
   // Zeile mit fertigen Runs pro Zelle; ausser der letzten Zeile bleibt alles beim nächsten
   const dataRow = (widths, runs, last) =>
     row(runs.map((r, i) => cell(widths[i], para(r, '', last ? '' : KEEP))).join(''));
@@ -440,26 +422,28 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
       ? para(image('rId3', 1, 'Foto', 'Foto von ' + m.name, Math.round(3.5 * CM), Math.round(3.5 * 4 / 3 * CM)), '', '<w:jc w:val="right"/>')
       : para();
     const rows = [
-      row(cell(W3[0] + W3[1], heading(1, 'Personalien', m.personalColor), '<w:gridSpan w:val="2"/>') +
+      row(cell(W3[0] + W3[1], para(run('Lebenslauf'), 'Title'), '<w:gridSpan w:val="2"/>') +
           cell(W3[2], photo, '<w:vMerge w:val="restart"/>' + photoMar)),
+      row(cell(W3[0] + W3[1], heading('Personalien'), '<w:gridSpan w:val="2"/>') +
+          cell(W3[2], para(), '<w:vMerge/>' + photoMar)),
     ];
     for (const [label, value] of m.personalien) {
-      rows.push(row(cell(W3[0], para(grey(label))) + cell(W3[1], para(run(value))) +
+      rows.push(row(cell(W3[0], para(run(label))) + cell(W3[1], para(run(value))) +
         cell(W3[2], para(), '<w:vMerge/>' + photoMar)));
     }
-    return secTable(m.personalColor, W3, rows);
+    return secTable(W3, rows);
   }
 
   function sectionTable(s) {
     if (s.kind === 'text') {
-      return secTable(s.color, W1, [headRow(W1, s.n, s.title, s.color), row(cell(W1[0], para(run(s.text))))]);
+      return secTable(W1, [headRow(W1, s.title), row(cell(W1[0], para(run(s.text))))]);
     }
     if (s.kind === 'lang') {
-      return secTable(s.color, WL, [headRow(WL, s.n, s.title, s.color),
+      return secTable(WL, [headRow(WL, s.title),
         ...s.rows.map((r, i) => dataRow(WL,
           [run(r.sprache), ...LEVELS.map((l) => box(r.niveau === l) + run(' ' + l))], i === s.rows.length - 1))]);
     }
-    return secTable(s.color, W3, [headRow(W3, s.n, s.title, s.color),
+    return secTable(W3, [headRow(W3, s.title),
       dataRow(W3, s.head.map((h) => grey(h, 18)), false),
       ...s.rows.map((r, i) => dataRow(W3, r.map(run), i === s.rows.length - 1))]);
   }
@@ -483,7 +467,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   function cvBody(m) {
     // Leerer Absatz trennt die Abschnitt-Tabellen, sonst klebt Word sie zusammen
     const gap = para('', '', '<w:spacing w:before="0" w:after="0" w:line="220" w:lineRule="exact"/>');
-    const body = [para(run('Lebenslauf'), 'Title'), personalTable(m), gap];
+    const body = [personalTable(m), gap];
     for (const s of m.sections) body.push(sectionTable(s), gap);
     body.push(para('', '', '<w:keepNext/><w:spacing w:before="360"/>'));
     body.push(signTable(m));
@@ -528,9 +512,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/>' +
     '<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/></w:rPr></w:style>' +
     '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>' +
-    '<w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="18" w:space="4" w:color="3B5AA8"/></w:pBdr>' +
-    '<w:spacing w:before="0" w:after="280"/></w:pPr>' +
-    '<w:rPr><w:b/><w:bCs/><w:color w:val="14213D"/><w:sz w:val="56"/><w:szCs w:val="56"/></w:rPr></w:style>' +
+    '<w:pPr><w:keepNext/><w:spacing w:before="0" w:after="200"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>' +
     '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>' +
     '<w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr>' +
     '<w:spacing w:before="320" w:after="100"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:style>' +
@@ -821,12 +803,6 @@ const fullName = () => [t(state.vorname), t(state.nachname)].filter(Boolean).joi
 const plzOrt = (plz, ort) => [t(plz), t(ort)].filter(Boolean).join(' ');
 const ortDatum = () => [t(state.ortUnterschrift) || t(state.wohnort), longDate(state.datum)].filter(Boolean).join(', ');
 
-/* Farbe pro Abschnitt (ohne #, so braucht sie auch Word). Die Nummern ergeben sich
-   aus den ausgefüllten Abschnitten, die Farben bleiben fest. */
-const COLORS = {
-  Personalien: '2B4FD8', Schule: 'B4471E', Schnupperlehren: '9A6B00', Sprachen: '3A7D3A',
-  Hobbys: '7B2FD0', 'Stärken': '2F6F6A', Referenzen: '4B5B78',
-};
 function model() {
   const personalien = [
     ['Vorname', t(state.vorname)],
@@ -848,9 +824,8 @@ function model() {
     { title: 'Hobbys', kind: 'text', text: commaList(state.interessen) },
     { title: 'Stärken', kind: 'text', text: commaList(state.staerken) },
     { title: 'Referenzen', kind: 'table', head: ['Name', 'Funktion und Betrieb', 'Telefon oder E-Mail'], rows: rows3(state.referenzen, 'name', 'funktion', 'kontakt') },
-  ].filter((s) => (s.kind === 'text' ? s.text : s.rows.length))
-    .map((s, i) => ({ ...s, n: i + 2, color: COLORS[s.title] }));
-  return { name: fullName(), personalien, personalColor: COLORS.Personalien, sections, ortDatum: ortDatum() };
+  ].filter((s) => (s.kind === 'text' ? s.text : s.rows.length));
+  return { name: fullName(), personalien, sections, ortDatum: ortDatum() };
 }
 
 function letterModel() {
@@ -880,12 +855,9 @@ function el(tag, cls, text) {
   if (text !== undefined) e.textContent = text;
   return e;
 }
-function cvSection(n, title, color) {
+function cvSection(title) {
   const sec = el('section', 'c-sec');
-  sec.style.setProperty('--c', '#' + color);
-  const h = el('div', 'c-h');
-  h.append(el('span', 'c-n', String(n)), el('span', '', title));
-  sec.append(h);
+  sec.append(el('div', 'c-h', title));
   return sec;
 }
 function cells(cls, list) {
@@ -902,12 +874,14 @@ function signatureImg(alt) {
 function renderCv() {
   const m = model();
   const sheet = $('sheet');
-  sheet.replaceChildren(el('div', 'c-title', 'Lebenslauf'));
+  sheet.replaceChildren();
 
-  const pers = cvSection(1, 'Personalien', m.personalColor);
+  // Titel und Personalien links, Foto rechts daneben
   const wrap = el('div', 'c-pers');
   const left = el('div');
-  for (const row of m.personalien) left.append(cells('c-row', row));
+  const pers = cvSection('Personalien');
+  for (const row of m.personalien) pers.append(cells('c-row', row));
+  left.append(el('div', 'c-title', 'Lebenslauf'), pers);
   wrap.append(left);
   if (fotoJpeg) {
     const img = el('img', 'c-photo');
@@ -917,11 +891,10 @@ function renderCv() {
   } else {
     wrap.append(el('div', 'c-nophoto', 'Foto'));
   }
-  pers.append(wrap);
-  sheet.append(pers);
+  sheet.append(wrap);
 
   for (const s of m.sections) {
-    const sec = cvSection(s.n, s.title, s.color);
+    const sec = cvSection(s.title);
     if (s.kind === 'text') {
       sec.append(el('div', 'c-text', s.text));
     } else if (s.kind === 'lang') {
