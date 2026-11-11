@@ -630,6 +630,260 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>
+/* Baut PDF-Dateien ohne Bibliothek. Jede A4-Seite wird mit Arial auf ein Canvas gezeichnet
+   (so stimmen auch Zeichen wie č oder ć) und als JPEG eingebettet. Darüber liegt eine
+   unsichtbare Textebene (Helvetica hat dieselben Masse wie Arial), damit man den Text
+   suchen und kopieren kann. Das Layout folgt der Word-Datei: A4, 2.5 cm Rand, Arial 11 pt.
+   cv(model, foto)        foto: Canvas mit dem zugeschnittenen Foto oder null
+   letter(model, sig)     sig:  Canvas mit der Unterschrift oder null */
+(function (root) {
+  'use strict';
+
+  const PX = 200 / 25.4;                 // Pixel pro mm (200 dpi)
+  const PAGE_W = 210, PAGE_H = 297, M = 25, CW = PAGE_W - 2 * M, BOTTOM = PAGE_H - M;
+  const PT = 25.4 / 72;                  // mm pro Punkt
+  const FONT = 'Arial, Helvetica, sans-serif';
+  const COLS = [44.1, 75.9, 40];         // wie in Word: 2500 / 4300 / 2270 DXA
+  const CELL_PAD = 0.18, CELL_RIGHT = 1.4;
+
+  function Doc() {
+    const pages = [];
+    let ctx = null, page = null;
+    const d = {
+      pages,
+      y: M,
+      newPage() {
+        const c = document.createElement('canvas');
+        c.width = Math.round(PAGE_W * PX);
+        c.height = Math.round(PAGE_H * PX);
+        ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        page = { canvas: c, texts: [] };
+        pages.push(page);
+        d.y = M;
+      },
+      lh: (size) => size * PT * 1.265,
+      font(size, bold) { ctx.font = `${bold ? 'bold ' : ''}${size * PT * PX}px ${FONT}`; },
+      width(text, size, bold) { d.font(size, bold); return ctx.measureText(text).width / PX; },
+      // Umbruch nur an normalen Leerzeichen; geschützte Leerzeichen halten Einheiten zusammen
+      wrap(text, w, size, bold) {
+        const out = [];
+        for (const para of String(text).split('\n')) {
+          let line = '';
+          for (const word of para.split(' ')) {
+            const next = line ? line + ' ' + word : word;
+            if (!line || d.width(next, size, bold) <= w) line = next;
+            else { out.push(line); line = word; }
+            while (line.length > 1 && d.width(line, size, bold) > w) {
+              let i = line.length - 1;
+              while (i > 1 && d.width(line.slice(0, i), size, bold) > w) i--;
+              out.push(line.slice(0, i));
+              line = line.slice(i);
+            }
+          }
+          out.push(line);
+        }
+        return out;
+      },
+      text(str, x, top, size, { bold = false, color = '#000' } = {}) {
+        if (!str) return;
+        d.font(size, bold);
+        ctx.fillStyle = color;
+        const base = top + size * PT * 0.98;
+        ctx.fillText(str, x * PX, base * PX);
+        page.texts.push({ str, x, base, size, bold });
+      },
+      rule(x, y, w) {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(x * PX, y * PX, w * PX, Math.max(1, 0.26 * PX));
+      },
+      image(src, x, y, w, h) { ctx.drawImage(src, x * PX, y * PX, w * PX, h * PX); },
+      need(h) { if (d.y + h > BOTTOM) d.newPage(); },
+    };
+    d.newPage();
+    return d;
+  }
+
+  // Absatz über die volle Breite, Zeile für Zeile mit Seitenumbruch
+  function para(d, text, size, opt = {}, width = CW) {
+    for (const line of d.wrap(text, width, size, opt.bold)) {
+      d.need(d.lh(size));
+      d.text(line, M, d.y, size, opt);
+      d.y += d.lh(size);
+    }
+  }
+  // Tabellenzeile: Zellen umbrechen, Zeilenhöhe = höchste Zelle
+  function row(d, cells, widths, size, opt = {}) {
+    const wrapped = cells.map((c, i) => d.wrap(c, widths[i] - CELL_RIGHT, size, opt.bold));
+    const h = Math.max(...wrapped.map((l) => l.length)) * d.lh(size) + 2 * CELL_PAD;
+    d.need(h);
+    let x = M;
+    wrapped.forEach((lines, i) => {
+      lines.forEach((l, j) => d.text(l, x, d.y + CELL_PAD + j * d.lh(size), size, opt));
+      x += widths[i];
+    });
+    d.y += h;
+  }
+  // Überschrift wie «Überschrift 1» in Word: 12 pt fett, Linie darunter, bleibt beim Inhalt
+  function heading(d, title, width) {
+    d.need(3.5 + d.lh(12) + 1.6 + 2 * d.lh(11));
+    if (d.y > M) d.y += 3.5;
+    d.text(title, M, d.y, 12, { bold: true });
+    d.y += d.lh(12) + 0.7;
+    d.rule(M, d.y, width);
+    d.y += 0.26 + 1.06;
+  }
+
+  function cv(m, foto) {
+    const d = Doc();
+    const photoW = 35, photoH = 35 * 4 / 3;
+    if (foto) d.image(foto, M + CW - photoW, M, photoW, photoH);
+    d.text('Lebenslauf', M, d.y, 18, { bold: true });
+    d.y += d.lh(18) + 2.1;
+    heading(d, 'Personalien', COLS[0] + COLS[1]);
+    for (const [label, value] of m.personalien) row(d, [label, value], [COLS[0], COLS[1]], 11);
+    if (d.pages.length === 1) d.y = Math.max(d.y, M + photoH);
+    for (const s of m.sections) {
+      heading(d, s.title, CW);
+      if (s.kind === 'text') {
+        para(d, s.text, 11);
+      } else {
+        row(d, s.head, COLS, 9, { color: '#555' });
+        for (const r of s.rows) row(d, r, COLS, 11);
+      }
+    }
+    if (m.ortDatum) {
+      d.y += 6.35;
+      para(d, m.ortDatum, 11);
+    }
+    return pdf(d.pages, 'Lebenslauf ' + m.name);
+  }
+
+  function letter(L, sig) {
+    const d = Doc();
+    const block = (list, gap) => {
+      list.forEach((s) => para(d, s, 11));
+      if (list.length) d.y += gap;
+    };
+    block(L.absender, 10.6);
+    block(L.empfaenger, 10.6);
+    block([L.ortDatum].filter(Boolean), 8.5);
+    if (L.betreff) {
+      para(d, L.betreff, 11, { bold: true });
+      d.y += 6.35;
+    }
+    para(d, L.anrede, 11);
+    d.y += 3.5;
+    for (const p of L.absaetze) {
+      para(d, p, 11);
+      d.y += 3.5;
+    }
+    // Gruss, Unterschrift und Name bleiben zusammen
+    d.need(2 * d.lh(11) + 12.5);
+    para(d, 'Freundliche Grüsse', 11);
+    if (sig) {
+      d.image(sig, M, d.y, 50, 12.5);
+      d.y += 12.5;
+    } else {
+      d.y += 9.9;
+    }
+    para(d, L.name, 11);
+    if (L.beilagen.length) {
+      d.y += 8.5;
+      d.need(2 * d.lh(11));
+      para(d, 'Beilagen', 11, { bold: true });
+      L.beilagen.forEach((b) => para(d, b, 11));
+    }
+    return pdf(d.pages, 'Motivationsschreiben ' + L.name);
+  }
+
+  /* ---------- PDF-Datei ---------- */
+  // WinAnsi-Zeichen für die unsichtbare Textebene; Unbekanntes wird zum Grundbuchstaben (č → c)
+  const WIN = {
+    0x20AC: 0x80, 0x201A: 0x82, 0x0192: 0x83, 0x201E: 0x84, 0x2026: 0x85, 0x2020: 0x86, 0x2021: 0x87,
+    0x02C6: 0x88, 0x2030: 0x89, 0x0160: 0x8A, 0x2039: 0x8B, 0x0152: 0x8C, 0x017D: 0x8E, 0x2018: 0x91,
+    0x2019: 0x92, 0x201C: 0x93, 0x201D: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97, 0x02DC: 0x98,
+    0x2122: 0x99, 0x0161: 0x9A, 0x203A: 0x9B, 0x0153: 0x9C, 0x017E: 0x9E, 0x0178: 0x9F,
+  };
+  function winAnsiHex(str) {
+    let hex = '';
+    for (const ch of str) {
+      let c = ch.codePointAt(0);
+      if (c < 0x20) c = 0x20;
+      else if (!(c < 0x7F || (c >= 0xA0 && c <= 0xFF))) {
+        const base = ch.normalize('NFD').codePointAt(0);
+        c = WIN[c] || (base < 0x7F ? base : 0x3F);
+      }
+      hex += c.toString(16).padStart(2, '0');
+    }
+    return hex;
+  }
+  function utf16Hex(str) {
+    let hex = 'FEFF';
+    for (let i = 0; i < str.length; i++) hex += str.charCodeAt(i).toString(16).padStart(4, '0');
+    return hex;
+  }
+  function latin1(s) {
+    const b = new Uint8Array(s.length);
+    for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 255;
+    return b;
+  }
+  function jpegBytes(canvas) {
+    const url = canvas.toDataURL('image/jpeg', 0.9);
+    return latin1(atob(url.slice(url.indexOf(',') + 1)));
+  }
+
+  function pdf(pages, title) {
+    const chunks = [], offsets = [];
+    let len = 0;
+    const add = (b) => { chunks.push(b); len += b.length; };
+    const obj = (n, parts) => {
+      offsets[n] = len;
+      add(latin1(`${n} 0 obj\n`));
+      for (const p of [].concat(parts)) add(typeof p === 'string' ? latin1(p) : p);
+      add(latin1('\nendobj\n'));
+    };
+    const W = 595.28, H = 841.89, K = 72 / 25.4;
+    const count = 5 + pages.length * 3;
+
+    add(latin1('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, `<< /Type /Pages /Kids [${pages.map((_, i) => `${6 + i * 3} 0 R`).join(' ')}] /Count ${pages.length} >>`);
+    obj(3, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+    obj(4, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+    obj(5, `<< /Title <${utf16Hex(title)}> /Creator (Meine Bewerbung) >>`);
+    pages.forEach((p, i) => {
+      const n = 6 + i * 3;
+      const jpg = jpegBytes(p.canvas);
+      let content = `q ${W} 0 0 ${H} 0 0 cm /Im0 Do Q\nBT 3 Tr\n`;
+      for (const t of p.texts) {
+        content += `/${t.bold ? 'F2' : 'F1'} ${t.size} Tf 1 0 0 1 ${(t.x * K).toFixed(2)} ${(H - t.base * K).toFixed(2)} Tm <${winAnsiHex(t.str)}> Tj\n`;
+      }
+      content += 'ET';
+      obj(n, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] ` +
+        `/Resources << /XObject << /Im0 ${n + 2} 0 R >> /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${n + 1} 0 R >>`);
+      obj(n + 1, [`<< /Length ${content.length} >>\nstream\n`, content, '\nendstream']);
+      obj(n + 2, [`<< /Type /XObject /Subtype /Image /Width ${p.canvas.width} /Height ${p.canvas.height} ` +
+        `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`, jpg, '\nendstream']);
+    });
+
+    const xref = len;
+    let tail = `xref\n0 ${count + 1}\n0000000000 65535 f \n`;
+    for (let i = 1; i <= count; i++) tail += String(offsets[i]).padStart(10, '0') + ' 00000 n \n';
+    tail += `trailer\n<< /Size ${count + 1} /Root 1 0 R /Info 5 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+    add(latin1(tail));
+
+    const out = new Uint8Array(len);
+    let at = 0;
+    for (const c of chunks) { out.set(c, at); at += c.length; }
+    return out;
+  }
+
+  root.LebenslaufPdf = { cv, letter };
+})(window);
+</script>
+<script>
 /* Bewerbungs-App: alle Daten bleiben im Browser (localStorage) oder in einer
    Datei, die die Schülerin oder der Schüler selbst sichert. Kein Netzverkehr. */
 'use strict';
@@ -1284,10 +1538,21 @@ function dataUrlBytes(url) {
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
 }
+const PDF_TYPE = 'application/pdf';
 const SHARE_WORD = canSend(WORD_TYPE, 'x.docx');
+const SHARE_PDF = canSend(PDF_TYPE, 'x.pdf');
 function updateWordLabel() {
-  const doc = tab === 'cv' ? 'Lebenslauf' : 'Schreiben';
-  $('btnWord').textContent = SHARE_WORD ? `${doc} senden an …` : `${doc} als Word`;
+  $('btnWord').textContent = SHARE_WORD ? 'Word senden an …' : 'Als Word';
+  $('btnPdf').textContent = SHARE_PDF ? 'PDF senden an …' : 'Als PDF';
+}
+// Meldung nach dem Weitergeben, z. B. «Der Lebenslauf (PDF) wurde weitergegeben.»
+function finished(isCv, format, how) {
+  const doc = `${isCv ? 'Der Lebenslauf' : 'Das Motivationsschreiben'} (${format})`;
+  say({
+    gesendet: `${doc} wurde weitergegeben.`,
+    abgebrochen: ABGEBROCHEN,
+    heruntergeladen: `${doc} liegt in deinem Download-Ordner.`,
+  }[how]);
 }
 const ABGEBROCHEN = 'Senden abgebrochen. Deine Angaben sind noch da.';
 function nameMissing() {
@@ -1305,24 +1570,28 @@ $('btnWord').addEventListener('click', async () => {
   const bytes = isCv
     ? window.LebenslaufDocx.build({ ...model(), foto: fotoJpeg ? dataUrlBytes(fotoJpeg) : null })
     : window.LebenslaufDocx.buildLetter({ ...letterModel(), unterschrift });
-  const doc = isCv ? 'Der Lebenslauf' : 'Das Motivationsschreiben';
   const how = await deliver(new Blob([bytes], { type: WORD_TYPE }),
     fileName(isCv ? 'Lebenslauf' : 'Motivationsschreiben', '.docx'));
-  say({
-    gesendet: `${doc} wurde weitergegeben.`,
-    abgebrochen: ABGEBROCHEN,
-    heruntergeladen: `${doc} liegt in deinem Download-Ordner.`,
-  }[how]);
+  finished(isCv, 'Word', how);
 });
 
-/* «Als PDF»: Druckfenster mit dem A4-Blatt. Der Seitentitel wird dort zum Dateinamen. */
-$('btnPdf').addEventListener('click', () => {
+/* PDF: synchron erzeugt, damit «Senden an» noch zum Antippen gehört (iPad verlangt das).
+   Foto und Unterschrift kommen direkt aus ihren Canvas-Feldern. */
+$('btnPdf').addEventListener('click', async () => {
   if (nameMissing()) return;
-  const title = document.title;
-  document.title = fileName(tab === 'cv' ? 'Lebenslauf' : 'Motivationsschreiben', '');
-  window.addEventListener('afterprint', () => { document.title = title; }, { once: true });
-  say('Mac: im Druckfenster unten «PDF» und dann «Als PDF sichern» wählen. iPad: oben auf das Teilen-Symbol tippen, dann sichern oder senden.');
-  window.print();
+  const isCv = tab === 'cv';
+  let bytes;
+  try {
+    bytes = isCv
+      ? window.LebenslaufPdf.cv(model(), fotoJpeg ? crop : null)
+      : window.LebenslaufPdf.letter(letterModel(), state.unterschrift ? sig : null);
+  } catch {
+    say('Das PDF konnte nicht erstellt werden. Versuche es noch einmal.', true);
+    return;
+  }
+  const how = await deliver(new Blob([bytes], { type: PDF_TYPE }),
+    fileName(isCv ? 'Lebenslauf' : 'Motivationsschreiben', '.pdf'));
+  finished(isCv, 'PDF', how);
 });
 
 /* ---------- Stand als Datei: Lebenslauf und Schreiben zusammen ---------- */
