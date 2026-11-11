@@ -301,10 +301,10 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 
     <section class="card">
       <h2>Text</h2>
-      <p class="hint">Die Anrede setzt die Seite selbst ein, zum Beispiel «Sehr geehrte Frau Muster,». Nach dem Komma beginnt der erste Satz klein. Schreibe zu jeder Frage ein paar Sätze.</p>
+      <p class="hint">Die Anrede setzt die Seite selbst ein, zum Beispiel «Sehr geehrte Frau Muster», ohne Komma. Der erste Satz danach beginnt darum gross. Schreibe zu jeder Frage ein paar Sätze.</p>
       <label class="field">1. Einstieg
         <span class="hint">Wie hast du von der Stelle erfahren? Wofür bewirbst du dich?</span>
-        <textarea data-f="briefEinstieg" rows="3" maxlength="1500" placeholder="z. B. auf berufsberatung.ch habe ich gesehen, dass Sie für August 2027 eine Lehrstelle als … anbieten. Darum bewerbe ich mich bei Ihnen."></textarea>
+        <textarea data-f="briefEinstieg" rows="3" maxlength="1500" placeholder="z. B. Auf berufsberatung.ch habe ich gesehen, dass Sie für August 2027 eine Lehrstelle als … anbieten. Darum bewerbe ich mich bei Ihnen."></textarea>
       </label>
       <label class="field">2. Warum dieser Beruf?
         <span class="hint">Was gefällt dir daran? Was hast du in der Schnupperlehre erlebt?</span>
@@ -491,7 +491,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     block(L.empfaenger, 600);
     body.push(para(run(L.ortDatum), '', after(480)));
     if (L.betreff) body.push(para(bold(L.betreff), '', after(360)));
-    body.push(para(run(L.anrede + ','), '', after(200)));
+    body.push(para(run(L.anrede), '', after(200)));
     for (const t of L.absaetze) body.push(para(lines(t), '', after(200)));
     body.push(para(run('Freundliche Grüsse'), '', '<w:keepNext/><w:spacing w:before="160" w:after="0"/>'));
     body.push(L.unterschrift
@@ -952,7 +952,7 @@ function renderLetter() {
   lines(L.empfaenger, 'Betrieb und Adresse');
   sheet.append(el('div', 'l-block', L.ortDatum));
   sheet.append(L.betreff ? el('div', 'l-subject', L.betreff) : el('div', 'l-subject l-empty', 'Betreff'));
-  sheet.append(el('div', 'l-p', L.anrede + ','));
+  sheet.append(el('div', 'l-p', L.anrede));
   if (L.absaetze.length) L.absaetze.forEach((p) => sheet.append(el('div', 'l-p', p)));
   else sheet.append(el('div', 'l-p l-empty', 'Hier steht dein Text.'));
   sheet.append(el('div', '', 'Freundliche Grüsse'));
