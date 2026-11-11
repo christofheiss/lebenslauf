@@ -102,10 +102,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 .c-text { overflow-wrap: anywhere; }
 .c-photo { width: 16.67cqw; height: 22.22cqw; object-fit: cover; flex: none; }
 .c-nophoto { width: 16.67cqw; height: 22.22cqw; flex: none; border: .1cqw dashed #aaa; color: #888; display: grid; place-items: center; font-size: 1.5cqw; }
-.s-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 6cqw; margin-top: 6cqw; }
-.s-signbox { min-height: 7.2cqw; border-bottom: .1cqw solid #000; display: flex; align-items: flex-end; overflow-wrap: anywhere; }
-.s-signbox img { width: 100%; max-width: 28.5cqw; display: block; }
-.s-cap { font-size: 1.4cqw; color: #555; margin-top: .4cqw; }
+.c-ortdatum { margin-top: 4.4cqw; overflow-wrap: anywhere; }
 .l-block { margin-bottom: 4.4cqw; overflow-wrap: anywhere; }
 .l-subject { font-weight: 700; margin-bottom: 3.3cqw; overflow-wrap: anywhere; }
 .l-p { margin-bottom: 1.8cqw; white-space: pre-line; overflow-wrap: anywhere; }
@@ -237,17 +234,11 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     </section>
 
     <section class="card">
-      <h2>Ort, Datum und Unterschrift</h2>
-      <p class="hint">Gilt auch für das Motivationsschreiben.</p>
+      <h2>Ort und Datum</h2>
+      <p class="hint">Steht am Schluss des Lebenslaufs und gilt auch für das Motivationsschreiben.</p>
       <div class="grid2">
         <label class="field">Ort <input data-f="ortUnterschrift" maxlength="60" id="ortUnterschrift"></label>
         <label class="field">Datum <input data-f="datum" type="date"></label>
-      </div>
-      <div class="field sig">
-        <span id="sigLabel">Unterschrift</span>
-        <canvas id="sigCanvas" width="800" height="200" aria-labelledby="sigLabel"></canvas>
-        <p class="hint">Unterschreibe mit dem Finger, dem Stift oder der Maus. Du kannst das Feld auch leer lassen und auf dem Ausdruck von Hand unterschreiben.</p>
-        <button type="button" class="quiet" id="sigClear">Unterschrift löschen</button>
       </div>
     </section>
   </form>
@@ -322,6 +313,16 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     </section>
 
     <section class="card">
+      <h2>Unterschrift</h2>
+      <div class="field sig">
+        <span id="sigLabel">Unterschreibe hier</span>
+        <canvas id="sigCanvas" width="800" height="200" aria-labelledby="sigLabel"></canvas>
+        <p class="hint">Unterschreibe mit dem Finger, dem Stift oder der Maus. Die Unterschrift steht unter «Freundliche Grüsse». Du kannst das Feld auch leer lassen und auf dem Ausdruck von Hand unterschreiben.</p>
+        <button type="button" class="quiet" id="sigClear">Unterschrift löschen</button>
+      </div>
+    </section>
+
+    <section class="card">
       <h2>Beilagen</h2>
       <label class="field">Pro Zeile eine Beilage
         <textarea data-f="briefBeilagen" rows="3" maxlength="400"></textarea>
@@ -340,7 +341,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
    Eine .docx ist ein ZIP-Archiv mit XML-Dateien; hier ungepackt gespeichert.
    Lebenslauf: { name, personalien: [[Bezeichnung, Wert]],
                  sections: [{ title, kind: 'table'|'text', head, rows, text }],
-                 ortDatum, foto: Uint8Array|null (JPEG), unterschrift: Uint8Array|null (PNG) }
+                 ortDatum, foto: Uint8Array|null (JPEG) }
    Schreiben:  { name, absender: [String], empfaenger: [String], ortDatum, betreff,
                  anrede, absaetze: [String], beilagen: [String], unterschrift } */
 (function (root) {
@@ -442,30 +443,13 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
       ...s.rows.map((r, i) => dataRow(W3, r.map(run), i === s.rows.length - 1))]);
   }
 
-  function signTable(m) {
-    const line = '<w:tcBorders><w:bottom w:val="single" w:sz="6" w:space="0" w:color="000000"/></w:tcBorders><w:vAlign w:val="bottom"/>';
-    const sig = m.unterschrift
-      ? para(image('rId4', 2, 'Unterschrift', 'Unterschrift von ' + m.name, 6 * CM, Math.round(1.5 * CM)))
-      : para();
-    const W = [4200, 670, 4200];
-    return table(W, [
-      '<w:tr><w:trPr><w:cantSplit/><w:trHeight w:val="1000" w:hRule="atLeast"/></w:trPr>' +
-        cell(W[0], para(m.ortDatum ? run(m.ortDatum) : '', '', '<w:keepNext/>'), line) +
-        cell(W[1], para('', '', '<w:keepNext/>')) +
-        cell(W[2], sig, line) + '</w:tr>',
-      row(cell(W[0], para(run('Ort, Datum'), 'Beschriftung')) + cell(W[1], para()) +
-          cell(W[2], para(run('Unterschrift'), 'Beschriftung'))),
-    ]);
-  }
-
   function cvBody(m) {
     // Leerer Absatz trennt die Abschnitt-Tabellen, sonst klebt Word sie zusammen
     const gap = para('', '', '<w:spacing w:before="0" w:after="0" w:line="220" w:lineRule="exact"/>');
     const body = [personalTable(m), gap];
     for (const s of m.sections) body.push(sectionTable(s), gap);
-    body.push(para('', '', '<w:keepNext/><w:spacing w:before="360"/>'));
-    body.push(signTable(m));
-    body.push(para('', '', '<w:spacing w:line="20" w:lineRule="exact"/>'));
+    // Schluss: nur Ort und Datum, ohne Linie und ohne Unterschrift
+    body.push(para(m.ortDatum ? run(m.ortDatum) : '', '', '<w:spacing w:before="480"/>'));
     return body.join('');
   }
 
@@ -626,7 +610,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   }
 
   root.LebenslaufDocx = {
-    build: (m) => zip(parts({ body: cvBody(m), title: 'Lebenslauf ' + m.name, creator: m.name, foto: m.foto, unterschrift: m.unterschrift })),
+    build: (m) => zip(parts({ body: cvBody(m), title: 'Lebenslauf ' + m.name, creator: m.name, foto: m.foto, unterschrift: null })),
     buildLetter: (L) => zip(parts({ body: letterBody(L), title: 'Motivationsschreiben ' + L.name, creator: L.name, foto: null, unterschrift: L.unterschrift })),
   };
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -924,15 +908,7 @@ function renderCv() {
     sheet.append(sec);
   }
 
-  const sign = el('div', 's-sign');
-  const a = el('div'), b = el('div');
-  const boxA = el('div', 's-signbox', m.ortDatum);
-  const boxB = el('div', 's-signbox');
-  if (state.unterschrift) boxB.append(signatureImg('Deine Unterschrift'));
-  a.append(boxA, el('div', 's-cap', 'Ort, Datum'));
-  b.append(boxB, el('div', 's-cap', 'Unterschrift'));
-  sign.append(a, b);
-  sheet.append(sign);
+  sheet.append(el('div', 'c-ortdatum', m.ortDatum));
 }
 
 function renderLetter() {
@@ -974,7 +950,6 @@ function renderLetter() {
   };
   item('Absender', L.absender.join('\n'), 'Fehlt noch. Fülle die Personalien aus.');
   item('Ort, Datum', L.ortDatum, 'Fehlt noch.');
-  item('Unterschrift', state.unterschrift ? 'vorhanden' : '', 'Keine. Unterschreibe im Lebenslauf oder von Hand.');
 }
 
 function renderPreview() {
@@ -1312,7 +1287,7 @@ $('btnWord').addEventListener('click', async () => {
   const unterschrift = state.unterschrift ? dataUrlBytes(state.unterschrift) : null;
   const isCv = tab === 'cv';
   const bytes = isCv
-    ? window.LebenslaufDocx.build({ ...model(), foto: fotoJpeg ? dataUrlBytes(fotoJpeg) : null, unterschrift })
+    ? window.LebenslaufDocx.build({ ...model(), foto: fotoJpeg ? dataUrlBytes(fotoJpeg) : null })
     : window.LebenslaufDocx.buildLetter({ ...letterModel(), unterschrift });
   const doc = isCv ? 'Der Lebenslauf' : 'Das Motivationsschreiben';
   const how = await deliver(new Blob([bytes], { type: WORD_TYPE }),
