@@ -91,18 +91,18 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 .sheetwrap { container-type: inline-size; width: 100%; max-width: calc((100vh - 190px) / 1.414); margin-inline: auto; }
 .sheet { background: #fff; color: #000; box-shadow: 0 1px 6px rgba(0, 0, 0, .22); min-height: 141.4cqw; padding: 11.9cqw; font: 1.85cqw/1.35 Arial, Helvetica, sans-serif; }
 /* Lebenslauf: schlicht, wie die Word-Datei */
-.c-title { font-size: 3.4cqw; font-weight: 700; margin-bottom: 2cqw; }
-.c-sec { margin-bottom: 2.4cqw; }
-.c-h { font-size: 2.2cqw; font-weight: 700; border-bottom: .12cqw solid #000; padding-bottom: .3cqw; margin-bottom: 1cqw; }
+.c-title { font-size: 3.4cqw; font-weight: 700; margin-bottom: 1.2cqw; }
+.c-sec { margin-bottom: 1.3cqw; }
+.c-h { font-size: 2.2cqw; font-weight: 700; border-bottom: .12cqw solid #000; padding-bottom: .3cqw; margin-bottom: .6cqw; }
 .c-pers { display: flex; justify-content: space-between; align-items: flex-start; gap: 2cqw; }
 .c-pers > :first-child { flex: 1; min-width: 0; }
-.c-row { display: grid; grid-template-columns: 19cqw minmax(0, 1fr); margin-bottom: .6cqw; overflow-wrap: anywhere; }
-.c-row3 { display: grid; grid-template-columns: 19cqw minmax(0, 1fr) 16cqw; gap: 0 1cqw; margin-bottom: .6cqw; overflow-wrap: anywhere; }
-.c-row3.c-cap { color: #666; font-size: 1.5cqw; margin-bottom: .4cqw; }
+.c-row { display: grid; grid-template-columns: 19cqw minmax(0, 1fr); margin-bottom: .3cqw; overflow-wrap: anywhere; }
+.c-row3 { display: grid; grid-template-columns: 19cqw minmax(0, 1fr) 16cqw; gap: 0 1cqw; margin-bottom: .3cqw; overflow-wrap: anywhere; }
+.c-row3.c-cap { color: #666; font-size: 1.5cqw; margin-bottom: .2cqw; }
 .c-text { overflow-wrap: anywhere; }
 .c-photo { width: 16.67cqw; height: 22.22cqw; object-fit: cover; flex: none; }
 .c-nophoto { width: 16.67cqw; height: 22.22cqw; flex: none; border: .1cqw dashed #aaa; color: #888; display: grid; place-items: center; font-size: 1.5cqw; }
-.c-ortdatum { margin-top: 4.4cqw; overflow-wrap: anywhere; }
+.c-ortdatum { margin-top: 3cqw; overflow-wrap: anywhere; }
 .l-block { margin-bottom: 4.4cqw; overflow-wrap: anywhere; }
 .l-subject { font-weight: 700; margin-bottom: 3.3cqw; overflow-wrap: anywhere; }
 .l-p { margin-bottom: 1.8cqw; white-space: pre-line; overflow-wrap: anywhere; }
@@ -110,6 +110,19 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 .l-sig img { width: 22cqw; display: block; }
 .l-beilagen { margin-top: 4.4cqw; }
 .l-empty { color: #9a9a9a; font-style: italic; }
+
+/* «Als PDF»: nur das A4-Blatt der offenen Registerkarte drucken */
+@media print {
+  @page { size: A4; margin: 25mm 0; }
+  body { background: #fff; }
+  .bar, .form, .preview > h2, .l-empty { display: none !important; }
+  .layout { display: block; padding: 0; margin: 0; max-width: none; }
+  .preview { position: static; display: block; }
+  .sheetwrap { width: 100%; max-width: none; margin: 0; }
+  .sheet { box-shadow: none; min-height: 0; padding: 0 11.9cqw; }
+  .c-sec, .c-row, .c-row3, .l-p { break-inside: avoid; }
+  .c-h { break-after: avoid; }
+}
 
 @media (max-width: 900px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
@@ -131,6 +144,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   <h1>Meine Bewerbung</h1>
   <div class="actions">
     <button type="button" class="primary" id="btnWord">Als Word speichern</button>
+    <button type="button" id="btnPdf">Als PDF</button>
     <button type="button" id="btnSave">Stand sichern</button>
     <label class="filebtn" tabindex="0">Stand laden<input type="file" id="fileLoad" accept=".json,application/json"></label>
     <button type="button" class="quiet" id="btnClear">Alles löschen</button>
@@ -383,8 +397,8 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     const total = widths.reduce((a, b) => a + b, 0);
     return '<w:tbl><w:tblPr>' +
       `<w:tblW w:w="${total}" w:type="dxa"/><w:tblLayout w:type="fixed"/>` +
-      '<w:tblCellMar><w:top w:w="30" w:type="dxa"/><w:left w:w="0" w:type="dxa"/>' +
-      '<w:bottom w:w="30" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar>' +
+      '<w:tblCellMar><w:top w:w="10" w:type="dxa"/><w:left w:w="0" w:type="dxa"/>' +
+      '<w:bottom w:w="10" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar>' +
       '</w:tblPr><w:tblGrid>' + widths.map((w) => `<w:gridCol w:w="${w}"/>`).join('') +
       '</w:tblGrid>' + rows.join('') + '</w:tbl>';
   }
@@ -445,11 +459,11 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 
   function cvBody(m) {
     // Leerer Absatz trennt die Abschnitt-Tabellen, sonst klebt Word sie zusammen
-    const gap = para('', '', '<w:spacing w:before="0" w:after="0" w:line="220" w:lineRule="exact"/>');
+    const gap = para('', '', '<w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/>');
     const body = [personalTable(m), gap];
     for (const s of m.sections) body.push(sectionTable(s), gap);
     // Schluss: nur Ort und Datum, ohne Linie und ohne Unterschrift
-    body.push(para(m.ortDatum ? run(m.ortDatum) : '', '', '<w:spacing w:before="480"/>'));
+    body.push(para(m.ortDatum ? run(m.ortDatum) : '', '', '<w:spacing w:before="360"/>'));
     return body.join('');
   }
 
@@ -490,10 +504,10 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
     '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/>' +
     '<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:eastAsia="Arial" w:cs="Arial"/></w:rPr></w:style>' +
     '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>' +
-    '<w:pPr><w:keepNext/><w:spacing w:before="0" w:after="200"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>' +
+    '<w:pPr><w:keepNext/><w:spacing w:before="0" w:after="120"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>' +
     '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>' +
     '<w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr>' +
-    '<w:spacing w:before="320" w:after="100"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:style>' +
+    '<w:spacing w:before="200" w:after="60"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:bCs/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:style>' +
     '<w:style w:type="paragraph" w:customStyle="1" w:styleId="Beschriftung"><w:name w:val="Beschriftung Feld"/><w:basedOn w:val="Normal"/><w:qFormat/>' +
     '<w:rPr><w:color w:val="555555"/><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr></w:style>' +
     '</w:styles>';
@@ -673,7 +687,7 @@ const TABLES = {
     hints: [['z. B. März 2026', 'z. B. Fachperson Betreuung', 'z. B. Kita Sonne, Sursee']],
   },
   sprachen: {
-    cols: [['sprache', 'Sprache', 40], ['niveau', 'Wie gut?', 10, 'level']],
+    cols: [['sprache', 'Sprache', 40], ['niveau', 'Wie gut?', 20, 'level']],
     rows: 3,
     hints: [['z. B. Deutsch'], ['z. B. Englisch'], ['z. B. Französisch']],
   },
@@ -1276,14 +1290,16 @@ function updateWordLabel() {
   $('btnWord').textContent = SHARE_WORD ? `${doc} senden an …` : `${doc} als Word`;
 }
 const ABGEBROCHEN = 'Senden abgebrochen. Deine Angaben sind noch da.';
-$('btnWord').addEventListener('click', async () => {
+function nameMissing() {
   const missing = !state.vorname.trim() ? 'vorname' : !state.nachname.trim() ? 'nachname' : '';
-  if (missing) {
-    showTab('cv');
-    say('Trage zuerst im Lebenslauf deinen Vor- und Nachnamen ein.', true);
-    $(missing).focus();
-    return;
-  }
+  if (!missing) return false;
+  showTab('cv');
+  say('Trage zuerst im Lebenslauf deinen Vor- und Nachnamen ein.', true);
+  $(missing).focus();
+  return true;
+}
+$('btnWord').addEventListener('click', async () => {
+  if (nameMissing()) return;
   const unterschrift = state.unterschrift ? dataUrlBytes(state.unterschrift) : null;
   const isCv = tab === 'cv';
   const bytes = isCv
@@ -1297,6 +1313,16 @@ $('btnWord').addEventListener('click', async () => {
     abgebrochen: ABGEBROCHEN,
     heruntergeladen: `${doc} liegt in deinem Download-Ordner.`,
   }[how]);
+});
+
+/* «Als PDF»: Druckfenster mit dem A4-Blatt. Der Seitentitel wird dort zum Dateinamen. */
+$('btnPdf').addEventListener('click', () => {
+  if (nameMissing()) return;
+  const title = document.title;
+  document.title = fileName(tab === 'cv' ? 'Lebenslauf' : 'Motivationsschreiben', '');
+  window.addEventListener('afterprint', () => { document.title = title; }, { once: true });
+  say('Mac: im Druckfenster unten «PDF» und dann «Als PDF sichern» wählen. iPad: oben auf das Teilen-Symbol tippen, dann sichern oder senden.');
+  window.print();
 });
 
 /* ---------- Stand als Datei: Lebenslauf und Schreiben zusammen ---------- */
