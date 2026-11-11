@@ -66,8 +66,8 @@ textarea { resize: vertical; }
 .t-ref .rowhead, .t-ref .schoolrow { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; }
 .rowhead { font-size: .9rem; font-weight: 600; padding-right: 126px; grid-template-columns: 8.5rem minmax(0, 1.4fr) minmax(0, 1fr); }
 .t-ref .rowhead { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); }
-.t-lang .schoolrow { grid-template-columns: minmax(0, 1fr) 10rem auto; }
-.t-lang .rowhead { grid-template-columns: minmax(0, 1fr) 10rem; }
+.t-lang .schoolrow { grid-template-columns: minmax(0, 1fr) 12rem auto; }
+.t-lang .rowhead { grid-template-columns: minmax(0, 1fr) 12rem; }
 .schoolrow { margin-bottom: 6px; }
 .rowbtns { display: flex; }
 .rowbtns button { min-width: 40px; padding: 0; border-color: transparent; background: transparent; color: var(--muted); }
@@ -99,9 +99,6 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 .c-row { display: grid; grid-template-columns: 19cqw minmax(0, 1fr); margin-bottom: .6cqw; overflow-wrap: anywhere; }
 .c-row3 { display: grid; grid-template-columns: 19cqw minmax(0, 1fr) 16cqw; gap: 0 1cqw; margin-bottom: .6cqw; overflow-wrap: anywhere; }
 .c-row3.c-cap { color: #666; font-size: 1.5cqw; margin-bottom: .4cqw; }
-.c-lang { display: grid; grid-template-columns: 26cqw repeat(3, 10cqw); align-items: center; margin-bottom: .6cqw; overflow-wrap: anywhere; }
-.c-opt { display: flex; align-items: center; gap: .8cqw; }
-.c-box { width: 1.9cqw; height: 1.9cqw; border: .15cqw solid #222; border-radius: .3cqw; display: grid; place-items: center; font-size: 1.5cqw; line-height: 1; flex: none; }
 .c-text { overflow-wrap: anywhere; }
 .c-photo { width: 16.67cqw; height: 22.22cqw; object-fit: cover; flex: none; }
 .c-nophoto { width: 16.67cqw; height: 22.22cqw; flex: none; border: .1cqw dashed #aaa; color: #888; display: grid; place-items: center; font-size: 1.5cqw; }
@@ -342,7 +339,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 /* Baut Word-Dateien (.docx) ohne Bibliothek: den Lebenslauf und das Motivationsschreiben.
    Eine .docx ist ein ZIP-Archiv mit XML-Dateien; hier ungepackt gespeichert.
    Lebenslauf: { name, personalien: [[Bezeichnung, Wert]],
-                 sections: [{ title, kind: 'table'|'lang'|'text', head, rows, text }],
+                 sections: [{ title, kind: 'table'|'text', head, rows, text }],
                  ortDatum, foto: Uint8Array|null (JPEG), unterschrift: Uint8Array|null (PNG) }
    Schreiben:  { name, absender: [String], empfaenger: [String], ortDatum, betreff,
                  anrede, absaetze: [String], beilagen: [String], unterschrift } */
@@ -359,9 +356,7 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
 
   // Satzspiegel A4 mit 2.5 cm Rand: 9070 DXA Breite
   const W3 = [2500, 4300, 2270];        // Personalien (mit Foto), Schule, Schnupperlehren, Referenzen
-  const WL = [3300, 1450, 1600, 2720];  // Sprachen: Sprache, gut, mittel, wenig
-  const W1 = [9070];                    // Hobbys, Stärken
-  const LEVELS = ['gut', 'mittel', 'wenig'];
+  const W1 = [9070];                    // Sprachen, Hobbys, Stärken
   const CM = 360000; // EMU
 
   function esc(s) {
@@ -410,9 +405,6 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   const sum = (w) => w.reduce((a, b) => a + b, 0);
   const grey = (text, size = 22) =>
     `<w:r><w:rPr><w:color w:val="555555"/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`;
-  // Kästchen wie bei Word-Kontrollkästchen (Schrift MS Gothic)
-  const box = (on) =>
-    `<w:r><w:rPr><w:rFonts w:ascii="MS Gothic" w:hAnsi="MS Gothic" w:eastAsia="MS Gothic"/></w:rPr><w:t>${on ? '☒' : '☐'}</w:t></w:r>`;
 
   // Abschnitt = Tabelle ohne Linien; die Überschrift steht in der ersten Zeile
   const secTable = (widths, rows) => table(widths, rows);
@@ -444,11 +436,6 @@ input[type=date] { -webkit-appearance: none; appearance: none; }
   function sectionTable(s) {
     if (s.kind === 'text') {
       return secTable(W1, [headRow(W1, s.title), row(cell(W1[0], para(run(s.text))))]);
-    }
-    if (s.kind === 'lang') {
-      return secTable(WL, [headRow(WL, s.title),
-        ...s.rows.map((r, i) => dataRow(WL,
-          [run(r.sprache), ...LEVELS.map((l) => box(r.niveau === l) + run(' ' + l))], i === s.rows.length - 1))]);
     }
     return secTable(W3, [headRow(W3, s.title),
       dataRow(W3, s.head.map((h) => grey(h, 18)), false),
@@ -666,7 +653,27 @@ function today() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
-const LEVELS = ['gut', 'mittel', 'wenig'];
+/* Sprachstufen in dieser Reihenfolge: [Wert, Auswahl im Formular, Text im Lebenslauf] */
+const LEVELS = [
+  ['muttersprache', 'Muttersprache', 'Muttersprache'],
+  ['fliessend', 'Fliessend', 'fliessend'],
+  ['gute', 'Gute Kenntnisse', 'gute Kenntnisse'],
+  ['grund', 'Grundkenntnisse', 'Grundkenntnisse'],
+];
+const LEVEL_KEYS = LEVELS.map(([v]) => v);
+// Eine Zeile «Albanisch (Muttersprache), Deutsch (fliessend), …», sortiert nach Stufe
+function sprachenText() {
+  const rank = (v) => (LEVEL_KEYS.includes(v) ? LEVEL_KEYS.indexOf(v) : LEVELS.length);
+  return state.sprachen
+    .map((r, i) => ({ name: t(r.sprache), niveau: r.niveau, i }))
+    .filter((r) => r.name)
+    .sort((a, b) => rank(a.niveau) - rank(b.niveau) || a.i - b.i)
+    .map((r) => {
+      const level = LEVELS.find(([v]) => v === r.niveau);
+      return level ? `${r.name} (${level[2]})` : r.name;
+    })
+    .join(', ');
+}
 /* Die Tabellen im Formular: [Schlüssel, Bezeichnung, maximale Länge, Art] */
 const TABLES = {
   schule: {
@@ -745,7 +752,7 @@ function normalize(raw) {
     s[t] = raw[t].slice(0, MAX_ROWS).map((r) =>
       Object.fromEntries(TABLES[t].cols.map(([k, , max, type]) => {
         const v = str(r?.[k], max);
-        return [k, type === 'level' && !LEVELS.includes(v) ? '' : v];
+        return [k, type === 'level' && !LEVEL_KEYS.includes(v) ? '' : v];
       })));
   }
   const f = raw.foto;
@@ -831,7 +838,7 @@ function model() {
   const sections = [
     { title: 'Schule', kind: 'table', head: ['Von – bis', 'Schule', 'Ort'], rows: rows3(state.schule, 'zeit', 'schule', 'ort') },
     { title: 'Schnupperlehren', kind: 'table', head: ['Wann', 'Beruf', 'Betrieb und Ort'], rows: rows3(state.schnupper, 'zeit', 'beruf', 'betrieb') },
-    { title: 'Sprachen', kind: 'lang', rows: state.sprachen.map((r) => ({ sprache: t(r.sprache), niveau: r.niveau })).filter((r) => r.sprache) },
+    { title: 'Sprachen', kind: 'text', text: sprachenText() },
     { title: 'Hobbys', kind: 'text', text: commaList(state.interessen) },
     { title: 'Stärken', kind: 'text', text: commaList(state.staerken) },
     { title: 'Referenzen', kind: 'table', head: ['Name', 'Funktion und Betrieb', 'Telefon oder E-Mail'], rows: rows3(state.referenzen, 'name', 'funktion', 'kontakt') },
@@ -908,17 +915,6 @@ function renderCv() {
     const sec = cvSection(s.title);
     if (s.kind === 'text') {
       sec.append(el('div', 'c-text', s.text));
-    } else if (s.kind === 'lang') {
-      for (const r of s.rows) {
-        const line = el('div', 'c-lang');
-        line.append(el('div', '', r.sprache));
-        for (const l of LEVELS) {
-          const opt = el('div', 'c-opt');
-          opt.append(el('span', 'c-box', r.niveau === l ? '✕' : ''), el('span', '', l));
-          line.append(opt);
-        }
-        sec.append(line);
-      }
     } else {
       sec.append(cells('c-row3 c-cap', s.head));
       for (const r of s.rows) sec.append(cells('c-row3', r));
@@ -1049,7 +1045,7 @@ function renderRows(table, focus) {
       let inp;
       if (type === 'level') {
         inp = el('select');
-        [['', '–'], ...LEVELS.map((l) => [l, l])].forEach(([v, text]) => {
+        [['', '–'], ...LEVELS.map(([v, label]) => [v, label])].forEach(([v, text]) => {
           const o = el('option', '', text);
           o.value = v;
           inp.append(o);
