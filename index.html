@@ -674,7 +674,7 @@ function sprachenText() {
       const level = LEVELS.find(([v]) => v === r.niveau);
       return (level ? `${r.name} (${level[1]})` : r.name).replace(/\s+/g, '\u00A0');
     });
-  return units.length > 1 ? units.slice(0, -1).join(', ') + ' und ' + units.at(-1) : units.join('');
+  return units.length > 1 ? units.slice(0, -1).join(', ') + ' und ' + units[units.length - 1] : units.join('');
 }
 /* Die Tabellen im Formular: [Schlüssel, Bezeichnung, maximale Länge, Art] */
 const TABLES = {
