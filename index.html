@@ -653,26 +653,28 @@ function today() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
-/* Sprachstufen in dieser Reihenfolge: [Wert, Auswahl im Formular, Text im Lebenslauf] */
+/* Sprachstufen in dieser Reihenfolge: [Wert, Text im Auswahlmenü und im Lebenslauf] */
 const LEVELS = [
-  ['muttersprache', 'Muttersprache', 'Muttersprache'],
-  ['fliessend', 'Fliessend', 'fliessend'],
-  ['gute', 'Gute Kenntnisse', 'gute Kenntnisse'],
-  ['grund', 'Grundkenntnisse', 'Grundkenntnisse'],
+  ['muttersprache', 'Muttersprache'],
+  ['fliessend', 'Fliessend'],
+  ['gute', 'Gute Kenntnisse'],
+  ['grund', 'Grundkenntnisse'],
 ];
 const LEVEL_KEYS = LEVELS.map(([v]) => v);
-// Eine Zeile «Albanisch (Muttersprache), Deutsch (fliessend), …», sortiert nach Stufe
+/* Eine Zeile «Deutsch (Muttersprache), Englisch (Fliessend) und Spanisch (Grundkenntnisse)»,
+   sortiert nach Stufe. Sprache und Stufe sind mit geschützten Leerzeichen verbunden, damit
+   Word und Browser eine Einheit nie auseinanderreissen, sondern ganz auf die nächste Zeile setzen. */
 function sprachenText() {
   const rank = (v) => (LEVEL_KEYS.includes(v) ? LEVEL_KEYS.indexOf(v) : LEVELS.length);
-  return state.sprachen
+  const units = state.sprachen
     .map((r, i) => ({ name: t(r.sprache), niveau: r.niveau, i }))
     .filter((r) => r.name)
     .sort((a, b) => rank(a.niveau) - rank(b.niveau) || a.i - b.i)
     .map((r) => {
       const level = LEVELS.find(([v]) => v === r.niveau);
-      return level ? `${r.name} (${level[2]})` : r.name;
-    })
-    .join(', ');
+      return (level ? `${r.name} (${level[1]})` : r.name).replace(/\s+/g, '\u00A0');
+    });
+  return units.length > 1 ? units.slice(0, -1).join(', ') + ' und ' + units.at(-1) : units.join('');
 }
 /* Die Tabellen im Formular: [Schlüssel, Bezeichnung, maximale Länge, Art] */
 const TABLES = {
